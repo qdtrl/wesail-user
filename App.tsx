@@ -1,7 +1,7 @@
 import React, {Suspense, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Login, Register} from './app/screens';
+import {Home, Login, Register} from './app/screens';
 import {User, onAuthStateChanged} from 'firebase/auth';
 import {auth} from './app/services/firebase';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -48,7 +48,7 @@ export default function App(): React.JSX.Element {
     <NavigationContainer>
       <Suspense fallback={<ActivityIndicator size="large" color="#0000ff" />} />
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
-      {!user ? (
+      {user ? (
         <Tab.Navigator
           initialRouteName="/feed-router"
           screenOptions={{
@@ -95,7 +95,12 @@ export default function App(): React.JSX.Element {
           />
         </Tab.Navigator>
       ) : (
-        <VisitorsStack.Navigator initialRouteName="/login">
+        <VisitorsStack.Navigator initialRouteName="/home">
+          <VisitorsStack.Screen
+            name="/home"
+            component={Home}
+            options={{headerShown: false}}
+          />
           <VisitorsStack.Screen
             name="/login"
             component={Login}

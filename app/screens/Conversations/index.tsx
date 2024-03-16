@@ -6,24 +6,45 @@ import {
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
-  Button,
+  StyleSheet,
+  Image,
 } from 'react-native';
-import {db} from '../../services/firebase';
+import {auth, db} from '../../services/firebase';
 
-import {serverTimestamp} from 'firebase/firestore';
+import {Icon} from '../../components';
+import {User} from 'firebase/auth';
+import ConversationProps from '../../models/conversation';
 
-type ConversationProps = {
-  id: string;
-  name: string;
-  created_at: typeof serverTimestamp;
-  icon_url: string;
-  users: string[];
-  admins: string[];
-};
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  card: {
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+  },
+  centerCard: {
+    flex: 1,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+  },
+});
 
 const Conversations = ({navigation}: any) => {
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
+  const user = auth.currentUser ? (auth.currentUser as User) : '';
 
   const getConversations = async () => {
     const conversationsRef = collection(db, 'conversations');
@@ -46,22 +67,39 @@ const Conversations = ({navigation}: any) => {
   useEffect(() => {
     getConversations();
   }, []);
+
   return (
     <SafeAreaView>
-      <View>
+      <View style={styles.header}>
         <Text>Conversations</Text>
-        <Button
-          title="Create Conversation"
-          onPress={() => navigation.navigate('/conversations/create')}
-        />
+        <View onTouchEnd={() => navigation.navigate('/conversations/create')}>
+          <Icon name="plus-circle" color="black" size={30} />
+        </View>
       </View>
       <ScrollView>
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           conversations.map(conversation => (
-            <View key={conversation.id}>
-              <Text>{conversation.name}</Text>
+            <View
+              style={styles.card}
+              key={conversation.id}
+              onTouchEnd={() =>
+                navigation.navigate('/conversations/show', {
+                  conversation: conversation,
+                  isAdmin: user && conversation.admins.includes(user.uid),
+                })
+              }>
+              <Image
+                source={{uri: conversation.icon_url}}
+                style={styles.image}
+              />
+              <View style={styles.centerCard}>
+                <Text>{conversation.name}</Text>
+                <Text>{conversation.users.length} participants</Text>
+              </View>
+
+              <Icon name="chevron-right" color="black" size={30} />
             </View>
           ))
         )}

@@ -1,5 +1,6 @@
-import {createUserWithEmailAndPassword} from 'firebase/auth';
 import React, {useState} from 'react';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
+import {auth} from '../../services/firebase';
 import {
   View,
   Text,
@@ -7,10 +8,9 @@ import {
   KeyboardAvoidingView,
   TextInput,
   ActivityIndicator,
-  Button,
   StyleSheet,
 } from 'react-native';
-import {auth} from '../../services/firebase';
+import {Button} from '../../components';
 
 interface RegisterProps {
   navigation: any;

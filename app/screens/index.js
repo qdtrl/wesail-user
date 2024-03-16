@@ -1,4 +1,5 @@
 // Visitors
+import Home from './Visitors/Home';
 import Login from './Visitors/Login';
 import Register from './Visitors/Register';
 
@@ -18,6 +19,7 @@ import UpdateConversation from './Conversations/update';
 import Profile from './Users/show';
 
 export {
+  Home,
   Login,
   Register,
   Boats,

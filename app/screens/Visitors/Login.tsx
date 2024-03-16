@@ -2,15 +2,14 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   ActivityIndicator,
-  Button,
   Alert,
   KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {auth} from '../../services/firebase';
 import {signInWithEmailAndPassword} from 'firebase/auth';
+import {Input, Button} from '../../components';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,10 +18,8 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 20,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
+  primary: {
+    backgroundColor: '#f0f0f0',
   },
 });
 
@@ -53,29 +50,27 @@ const Login = ({navigation}: LoginProps) => {
     <View style={styles.container}>
       <Text>Login</Text>
       <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={200}>
-        <TextInput
-          style={styles.input}
-          onChangeText={setEmail}
-          value={email}
-          placeholder="Email"
-          autoCapitalize="none"
-        />
+        <Input placeholder="Email" value={email} setValue={setEmail} />
 
-        <TextInput
-          style={styles.input}
-          secureTextEntry={true}
+        <Input
+          placeholder="Mot de passe"
           value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
+          setValue={setPassword}
+          secureTextEntry={true}
         />
 
         {loading ? (
           <ActivityIndicator size="large" />
         ) : (
           <>
-            <Button title="Connexion" onPress={handleLogin} />
             <Button
-              title="S'inscrire"
+              accessibilityLabel="Button pour se connecter"
+              color="#f194ff"
+              title="Se connecter"
+              onPress={handleLogin}
+            />
+            <Button
+              title="Créer un compte"
               onPress={() => {
                 navigation.navigate('/register');
               }}
