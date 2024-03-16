@@ -33,6 +33,8 @@ export default function App(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const size = 30;
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, res => {
       setUser(res);
@@ -51,6 +53,7 @@ export default function App(): React.JSX.Element {
           initialRouteName="/feed-router"
           screenOptions={{
             tabBarActiveTintColor: '#e91e63',
+            tabBarInactiveTintColor: 'gray',
           }}>
           <Tab.Screen
             name="/feed-router"
@@ -58,8 +61,7 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
-              tabBarIcon: ({color, size}) =>
-                TabIcon({name: 'home', color, size}),
+              tabBarIcon: ({color}) => TabIcon({name: 'home', color, size}),
             }}
           />
           <Tab.Screen
@@ -68,7 +70,7 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
-              tabBarIcon: ({color, size}) =>
+              tabBarIcon: ({color}) =>
                 TabIcon({name: 'sail-boat', color, size}),
             }}
           />
@@ -78,8 +80,8 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
-              tabBarIcon: ({color, size}) =>
-                TabIcon({name: 'chat', color, size}),
+              tabBarBadge: 1,
+              tabBarIcon: ({color}) => TabIcon({name: 'chat', color, size}),
             }}
           />
           <Tab.Screen
@@ -88,8 +90,7 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
-              tabBarIcon: ({color, size}) =>
-                TabIcon({name: 'account', color, size}),
+              tabBarIcon: ({color}) => TabIcon({name: 'account', color, size}),
             }}
           />
         </Tab.Navigator>

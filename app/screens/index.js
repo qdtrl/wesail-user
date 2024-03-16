@@ -1,8 +1,30 @@
+// Visitors
 import Login from './Visitors/Login';
 import Register from './Visitors/Register';
-import Boats from './Boats';
+
+// Feed
 import Feed from './Feed';
+
+// Boats
+import Boats from './Boats';
+
+// Conversations
 import Conversations from './Conversations';
+import Conversation from './Conversations/show';
+import CreateConversation from './Conversations/create';
+import UpdateConversation from './Conversations/update';
+
+// Users
 import Profile from './Users/show';
 
-export {Login, Register, Boats, Feed, Conversations, Profile};
+export {
+  Login,
+  Register,
+  Boats,
+  Feed,
+  Conversations,
+  Conversation,
+  CreateConversation,
+  UpdateConversation,
+  Profile,
+};
