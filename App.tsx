@@ -1,118 +1,112 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {Login, Register} from './app/screens';
+import {User, onAuthStateChanged} from 'firebase/auth';
+import {auth} from './app/services/firebase';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {ActivityIndicator} from 'react-native';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  BoatsRouter,
+  ConversationsRouter,
+  FeedRouter,
+  ProfileRouter,
+} from './app/routing';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Icon} from './app/components';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const VisitorsStack = createNativeStackNavigator();
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const Tab = createBottomTabNavigator();
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+type TabIconProps = {
+  name: string;
+  color: string;
+  size: number;
+};
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+const TabIcon = ({name, color, size}: TabIconProps) => (
+  <Icon name={name} color={color} size={size} />
+);
+
+export default function App(): React.JSX.Element {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, res => {
+      setUser(res);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+    <NavigationContainer>
+      <Suspense fallback={<ActivityIndicator size="large" color="#0000ff" />} />
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {!user ? (
+        <Tab.Navigator
+          initialRouteName="/feed-router"
+          screenOptions={{
+            tabBarActiveTintColor: '#e91e63',
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <Tab.Screen
+            name="/feed-router"
+            component={FeedRouter}
+            options={{
+              tabBarShowLabel: false,
+              headerShown: false,
+              tabBarIcon: ({color, size}) =>
+                TabIcon({name: 'home', color, size}),
+            }}
+          />
+          <Tab.Screen
+            name="/boats-router"
+            component={BoatsRouter}
+            options={{
+              tabBarShowLabel: false,
+              headerShown: false,
+              tabBarIcon: ({color, size}) =>
+                TabIcon({name: 'sail-boat', color, size}),
+            }}
+          />
+          <Tab.Screen
+            name="/conversations-router"
+            component={ConversationsRouter}
+            options={{
+              tabBarShowLabel: false,
+              headerShown: false,
+              tabBarIcon: ({color, size}) =>
+                TabIcon({name: 'chat', color, size}),
+            }}
+          />
+          <Tab.Screen
+            name="/profile-router"
+            component={ProfileRouter}
+            options={{
+              tabBarShowLabel: false,
+              headerShown: false,
+              tabBarIcon: ({color, size}) =>
+                TabIcon({name: 'account', color, size}),
+            }}
+          />
+        </Tab.Navigator>
+      ) : (
+        <VisitorsStack.Navigator initialRouteName="/login">
+          <VisitorsStack.Screen
+            name="/login"
+            component={Login}
+            options={{headerShown: false}}
+          />
+          <VisitorsStack.Screen
+            name="/register"
+            component={Register}
+            options={{headerShown: false}}
+          />
+        </VisitorsStack.Navigator>
+      )}
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
