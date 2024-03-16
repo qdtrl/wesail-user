@@ -1,11 +1,11 @@
 import React, {Suspense, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Home, Login, Register} from './app/screens';
 import {User, onAuthStateChanged} from 'firebase/auth';
 import {auth} from './app/services/firebase';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ActivityIndicator} from 'react-native';
+import {Home, Login, Register, ForgotPassword} from './app/screens';
 import {
   BoatsRouter,
   ConversationsRouter,
@@ -109,6 +109,11 @@ export default function App(): React.JSX.Element {
           <VisitorsStack.Screen
             name="/register"
             component={Register}
+            options={{headerShown: false}}
+          />
+          <VisitorsStack.Screen
+            name="/forgot-password"
+            component={ForgotPassword}
             options={{headerShown: false}}
           />
         </VisitorsStack.Navigator>

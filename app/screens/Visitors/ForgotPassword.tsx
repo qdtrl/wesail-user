@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {auth} from '../../services/firebase';
-import {signInWithEmailAndPassword} from 'firebase/auth';
+import {sendPasswordResetEmail} from 'firebase/auth';
 import {Input, Button} from '../../components';
 import Video from 'react-native-video';
 import {home_video, logo} from '../../assets';
@@ -70,17 +70,18 @@ interface LoginProps {
   navigation: any;
 }
 
-const Login = ({navigation}: LoginProps) => {
+const ForgotPassword = ({navigation}: LoginProps) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleResetPassword = async () => {
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert('Email envoyé');
     } catch (error) {
-      Alert.alert('Error', (error as Error).message);
+      Alert.alert('Erreur', (error as Error).message);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -89,11 +90,11 @@ const Login = ({navigation}: LoginProps) => {
   return (
     <View style={StyleSheet.absoluteFill}>
       <Video
-        source={home_video}
-        style={StyleSheet.absoluteFill}
+        source={home_video} // Le chemin de votre vidéo
+        style={StyleSheet.absoluteFill} // Pour couvrir tout l'écran
         muted={true}
         repeat={true}
-        resizeMode={'cover'}
+        resizeMode={'cover'} // Pour couvrir tout l'écran sans déformation
         rate={1.0}
         ignoreSilentSwitch={'obey'}
         opacity={0.2}
@@ -109,13 +110,6 @@ const Login = ({navigation}: LoginProps) => {
               </View>
               <View style={styles.inputs}>
                 <Input placeholder="Email" value={email} setValue={setEmail} />
-
-                <Input
-                  placeholder="Mot de passe"
-                  value={password}
-                  setValue={setPassword}
-                  secureTextEntry={true}
-                />
               </View>
 
               {loading ? (
@@ -123,28 +117,31 @@ const Login = ({navigation}: LoginProps) => {
               ) : (
                 <View style={styles.buttons}>
                   <Button
-                    accessibilityLabel="Button pour se connecter"
+                    title="Réinitialiser le mot de passe"
+                    width={250}
+                    onPress={() => {
+                      navigation.navigate('/home');
+                    }}
+                  />
+
+                  <Text style={styles.ou}>ou</Text>
+
+                  <Button
+                    accessibilityLabel="Button pour revenir à la page de connexion"
                     color="#4777EE"
                     outlined={true}
                     backgroundColor="transparent"
                     width={250}
                     title="Se connecter"
-                    onPress={handleLogin}
+                    onPress={handleResetPassword}
                   />
-                  <Text style={styles.ou}>ou</Text>
-                  <Button
-                    title="Créer un compte"
-                    width={250}
-                    onPress={() => {
-                      navigation.navigate('/register');
-                    }}
-                  />
+
                   <Text
                     style={styles.link}
                     onPress={() => {
-                      navigation.navigate('/forgot-password');
+                      navigation.navigate('/register');
                     }}>
-                    Mot de passe oublié ?
+                    Pas de compte ? S'inscrire
                   </Text>
                 </View>
               )}
@@ -156,4 +153,4 @@ const Login = ({navigation}: LoginProps) => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

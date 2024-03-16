@@ -2,6 +2,7 @@
 import Home from './Visitors/Home';
 import Login from './Visitors/Login';
 import Register from './Visitors/Register';
+import ForgotPassword from './Visitors/ForgotPassword';
 
 // Feed
 import Feed from './Feed';
@@ -22,6 +23,7 @@ export {
   Home,
   Login,
   Register,
+  ForgotPassword,
   Boats,
   Feed,
   Conversations,

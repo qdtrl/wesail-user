@@ -2,10 +2,10 @@ import React from 'react';
 import {StyleSheet, TextInput} from 'react-native';
 const style = StyleSheet.create({
   input: {
-    height: 40,
+    height: 45,
     padding: 10,
-    borderWidth: 0.8,
-    borderRadius: 8,
+    borderWidth: 1,
+    borderRadius: 10,
   },
 });
 

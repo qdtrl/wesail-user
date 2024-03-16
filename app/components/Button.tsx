@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
   // ...
   ButtonContainer: {
     elevation: 8,
-    backgroundColor: '#009688',
+    backgroundColor: '#4777EE',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
   ButtonText: {
     fontSize: 18,
-    color: '#fff',
+    color: 'black',
     fontWeight: 'bold',
     alignSelf: 'center',
     textAlign: 'center',
@@ -27,7 +27,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const Button = ({onPress, title, outlined, width}: any) => (
+const Button = ({
+  onPress,
+  title,
+  outlined,
+  width,
+  color,
+  backgroundColor,
+}: any) => (
   <TouchableOpacity
     onPress={onPress}
     style={
@@ -35,8 +42,13 @@ const Button = ({onPress, title, outlined, width}: any) => (
         ? {
             ...styles.ButtonContainer,
             ...styles.ButtonContainerOutlined,
+            borderColor: color || '#4777EE',
           }
-        : styles.ButtonContainer
+        : {
+            ...styles.ButtonContainer,
+            backgroundColor: backgroundColor || '#4777EE',
+            borderColor: backgroundColor || '#4777EE',
+          }
     }>
     <Text
       style={
@@ -44,9 +56,10 @@ const Button = ({onPress, title, outlined, width}: any) => (
           ? {
               ...styles.ButtonText,
               ...styles.ButtonTextOutlined,
+              color: color || '#4777EE',
               width,
             }
-          : {...styles.ButtonText, width: width}
+          : {...styles.ButtonText, width: width, color: color || '#EFEFEF'}
       }>
       {title}
     </Text>

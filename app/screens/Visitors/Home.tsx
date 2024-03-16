@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import {Button} from '../../components';
-import {logo, home_video} from '../../assets';
+import {logo_white, home_video} from '../../assets';
 import Video from 'react-native-video';
 
 const styles = StyleSheet.create({
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 50,
-    color: '#4777EE',
+    color: '#EFEFEF',
     fontWeight: 'bold',
   },
   logo: {width: 200, height: 200},
@@ -35,18 +35,17 @@ const Home = ({navigation}: any) => {
   return (
     <View style={StyleSheet.absoluteFill}>
       <Video
-        source={home_video} // Le chemin de votre vidéo
-        style={StyleSheet.absoluteFill} // Pour couvrir tout l'écran
+        source={home_video}
+        style={StyleSheet.absoluteFill}
         muted={true}
         repeat={true}
-        resizeMode={'cover'} // Pour couvrir tout l'écran sans déformation
+        resizeMode={'cover'}
         rate={1.0}
         ignoreSilentSwitch={'obey'}
-        opacity={0.4}
       />
       <View style={styles.container}>
         <View style={styles.brand}>
-          <Image source={logo} style={styles.logo} />
+          <Image source={logo_white} style={styles.logo} />
           <Text style={styles.title}>WeSail</Text>
         </View>
         <View style={styles.buttons}>
@@ -54,11 +53,14 @@ const Home = ({navigation}: any) => {
             title="Se connecter"
             outlined={true}
             width={250}
+            color="#EFEFEF"
             onPress={() => navigation.navigate('/login')}
           />
           <Button
             title="S'inscrire"
             width={250}
+            color="black"
+            backgroundColor="#EFEFEF"
             onPress={() => navigation.navigate('/register')}
           />
         </View>
