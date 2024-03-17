@@ -2,7 +2,7 @@ import React, {Suspense, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {User, onAuthStateChanged} from 'firebase/auth';
-import {auth} from './app/services/firebase';
+import {auth, rtdb} from './app/services/firebase';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ActivityIndicator} from 'react-native';
 import {Home, Login, Register, ForgotPassword} from './app/screens';
@@ -14,6 +14,7 @@ import {
 } from './app/routing';
 
 import {Icon} from './app/components';
+import {onValue, ref} from 'firebase/database';
 
 const VisitorsStack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ const TabIcon = ({name, color, size}: TabIconProps) => (
 export default function App(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState({
+    boats: 0,
+    conversations: 3,
+    profile: 0,
+  });
 
   const size = 30;
 
@@ -43,6 +49,24 @@ export default function App(): React.JSX.Element {
 
     return unsubscribe;
   }, []);
+  useEffect(() => {
+    if (user) {
+      const notificationsRef = ref(rtdb, `notifications/${user.uid}`);
+
+      onValue(notificationsRef, snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          setNotifications({
+            boats: data.boats ? Object.values(data.boats).length : 0,
+            conversations: data.conversations
+              ? Object.values(data.conversations).length
+              : 0,
+            profile: data.profile ? Object.values(data.profile).length : 0,
+          });
+        }
+      });
+    }
+  }, [user]);
 
   return (
     <NavigationContainer>
@@ -70,6 +94,8 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
+              tabBarBadge:
+                notifications.boats !== 0 ? notifications.boats : undefined,
               tabBarIcon: ({color}) =>
                 TabIcon({name: 'sail-boat', color, size}),
             }}
@@ -80,7 +106,10 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
-              tabBarBadge: 1,
+              tabBarBadge:
+                notifications.conversations !== 0
+                  ? notifications.conversations
+                  : undefined,
               tabBarIcon: ({color}) => TabIcon({name: 'chat', color, size}),
             }}
           />
@@ -90,6 +119,8 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
+              tabBarBadge:
+                notifications.profile !== 0 ? notifications.profile : undefined,
               tabBarIcon: ({color}) => TabIcon({name: 'account', color, size}),
             }}
           />
