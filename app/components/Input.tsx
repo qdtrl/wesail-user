@@ -14,6 +14,7 @@ interface InputProps {
   value: string;
   setValue: (text: string) => void;
   secureTextEntry?: boolean;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
 const Input = ({
@@ -21,6 +22,7 @@ const Input = ({
   value,
   setValue,
   secureTextEntry = false,
+  autoCapitalize = 'sentences',
 }: InputProps) => {
   return (
     <TextInput
@@ -29,6 +31,7 @@ const Input = ({
       value={value}
       onChangeText={setValue}
       placeholder={placeholder}
+      autoCapitalize={autoCapitalize}
     />
   );
 };

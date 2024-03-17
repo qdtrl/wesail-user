@@ -108,7 +108,12 @@ const Login = ({navigation}: LoginProps) => {
                 <Text style={styles.title}>WeSail</Text>
               </View>
               <View style={styles.inputs}>
-                <Input placeholder="Email" value={email} setValue={setEmail} />
+                <Input
+                  placeholder="Email"
+                  value={email}
+                  setValue={setEmail}
+                  autoCapitalize="none"
+                />
 
                 <Input
                   placeholder="Mot de passe"
@@ -123,22 +128,24 @@ const Login = ({navigation}: LoginProps) => {
               ) : (
                 <View style={styles.buttons}>
                   <Button
-                    accessibilityLabel="Button pour se connecter"
-                    color="#4777EE"
-                    outlined={true}
-                    backgroundColor="transparent"
-                    width={250}
                     title="Se connecter"
+                    accessibilityLabel="Button pour se connecter"
+                    width={250}
                     onPress={handleLogin}
                   />
                   <Text style={styles.ou}>ou</Text>
                   <Button
                     title="Créer un compte"
+                    accessibilityLabel="Button pour aller à la page d'inscription"
+                    color="#4777EE"
+                    outlined={true}
+                    backgroundColor="transparent"
                     width={250}
                     onPress={() => {
                       navigation.navigate('/register');
                     }}
                   />
+
                   <Text
                     style={styles.link}
                     onPress={() => {

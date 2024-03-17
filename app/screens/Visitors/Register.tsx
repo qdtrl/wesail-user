@@ -12,6 +12,7 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import {Button} from '../../components';
 
@@ -91,6 +92,7 @@ const Register = ({navigation}: RegisterProps) => {
       setLoading(true);
       await createUserWithEmailAndPassword(auth, user.email, user.password);
     } catch (error) {
+      Alert.alert('Erreur', (error as Error).message);
       console.error(error);
     } finally {
       setLoading(false);
@@ -120,7 +122,9 @@ const Register = ({navigation}: RegisterProps) => {
               <View style={styles.inputs}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={text => setUser({...user, email: text})}
+                  onChangeText={text =>
+                    setUser({...user, email: text.toLocaleLowerCase()})
+                  }
                   value={user.email}
                   placeholder="Email"
                   autoCapitalize="none"
@@ -150,17 +154,19 @@ const Register = ({navigation}: RegisterProps) => {
               ) : (
                 <View style={styles.buttons}>
                   <Button
-                    accessibilityLabel="Button pour s'inscrire"
-                    color="#4777EE"
-                    outlined={true}
-                    backgroundColor="transparent"
-                    width={250}
                     title="S'inscrire"
+                    accessibilityLabel="Button pour s'inscrire"
+                    width={250}
                     onPress={handleRegister}
                   />
                   <Text style={styles.ou}>ou</Text>
+
                   <Button
                     title="Se connecter"
+                    accessibilityLabel="Button pour revenir à la page de connexion"
+                    color="#4777EE"
+                    outlined={true}
+                    backgroundColor="transparent"
                     width={250}
                     onPress={() => {
                       navigation.navigate('/login');

@@ -117,11 +117,10 @@ const ForgotPassword = ({navigation}: LoginProps) => {
               ) : (
                 <View style={styles.buttons}>
                   <Button
+                    accessibilityLabel="Button pour réinitialiser le mot de passe"
                     title="Réinitialiser le mot de passe"
                     width={250}
-                    onPress={() => {
-                      navigation.navigate('/home');
-                    }}
+                    onPress={handleResetPassword}
                   />
 
                   <Text style={styles.ou}>ou</Text>
@@ -133,7 +132,9 @@ const ForgotPassword = ({navigation}: LoginProps) => {
                     backgroundColor="transparent"
                     width={250}
                     title="Se connecter"
-                    onPress={handleResetPassword}
+                    onPress={() => {
+                      navigation.navigate('/login');
+                    }}
                   />
 
                   <Text
