@@ -7,14 +7,20 @@ import {
   TextInput,
   StyleSheet,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
   Keyboard,
   Platform,
   Image,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {auth, db, rtdb} from '../../services/firebase';
-import {ref, push, onValue, serverTimestamp} from 'firebase/database';
+import {
+  ref,
+  push,
+  onValue,
+  serverTimestamp,
+  set,
+  remove,
+} from 'firebase/database';
 import {format} from 'date-fns';
 import {fr} from 'date-fns/locale';
 
@@ -48,14 +54,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollview: {
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-  },
-  containerMessages: {
-    minHeight: '100%',
-  },
+  containerMessages: {justifyContent: 'flex-end', minHeight: '100%'},
   containerMyMessage: {
     display: 'flex',
     flexDirection: 'column',
@@ -124,6 +123,32 @@ const Conversation = ({navigation, route}: ConversationParams) => {
 
   const [loading, setLoading] = useState(true);
 
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const scrollToBottom = () => {
+    scrollViewRef.current?.scrollToEnd({animated: true});
+  };
+
+  const handleScroll = (event: any) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    console.log(event.nativeEvent);
+
+    if (offsetY + 30 >= event.nativeEvent.layoutMeasurement.height) {
+      remove(
+        ref(
+          rtdb,
+          `notifications/${auth.currentUser?.uid}/conversations/${conversation.id}`,
+        ),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (messages && messages.length > 0 && !loading) {
+      scrollToBottom();
+    }
+  }, [messages, loading, conversation.id]);
+
   useEffect(() => {
     const getUser = async (user_id: string) => {
       const userDoc = await getDoc(doc(db, 'users', user_id));
@@ -163,20 +188,26 @@ const Conversation = ({navigation, route}: ConversationParams) => {
   }, [conversation.id]);
 
   const handlePostMessage = async () => {
-    if (message) {
+    const message_clean = message.trim();
+    if (message_clean) {
       push(ref(rtdb, `conversations/${conversation.id}/messages`), {
-        content: message,
+        content: message_clean,
         created_at: serverTimestamp(),
         user_id: auth.currentUser?.uid,
         images: [],
       });
       conversation.users.forEach((user_id: string) => {
         if (user_id !== auth.currentUser?.uid) {
-          push(ref(rtdb, `notifications/${user_id}/conversations`), {
-            conversation_id: conversation.id,
-            user_id: auth.currentUser?.uid,
-            created_at: serverTimestamp(),
-          });
+          set(
+            ref(
+              rtdb,
+              `notifications/${user_id}/conversations/${conversation.id}`,
+            ),
+            {
+              user_id: auth.currentUser?.uid,
+              created_at: serverTimestamp(),
+            },
+          );
         }
       });
       setMessage('');
@@ -190,83 +221,86 @@ const Conversation = ({navigation, route}: ConversationParams) => {
       ) : (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={100}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.scrollview}>
-              <ScrollView>
-                <View style={styles.containerMessages}>
-                  {messages.map((m: MessageProps, i: number) => {
-                    const isMe = m.user_id === auth.currentUser?.uid;
-                    const user = users.find(u => u.id === m.user_id);
+          keyboardVerticalOffset={100}
+          style={styles.container}>
+          <View style={styles.container} onTouchStart={Keyboard.dismiss}>
+            <ScrollView
+              style={styles.container}
+              ref={scrollViewRef}
+              onScroll={handleScroll}
+              scrollEventThrottle={300}>
+              <View style={styles.containerMessages}>
+                {messages.map((m: MessageProps, i: number) => {
+                  const isMe = m.user_id === auth.currentUser?.uid;
+                  const user = users.find(u => u.id === m.user_id);
 
-                    const messageDate = new Date(m.created_at);
+                  const messageDate = new Date(m.created_at);
 
-                    const today = new Date();
+                  const today = new Date();
 
-                    let date = '';
-                    if (today.getDate() === messageDate.getDate()) {
-                      date = format(messageDate, 'HH:mm', {locale: fr});
-                    } else {
-                      date = format(messageDate, 'dd/MM/yyyy', {locale: fr});
-                    }
+                  let date = '';
+                  if (today.getDate() === messageDate.getDate()) {
+                    date = format(messageDate, 'HH:mm', {locale: fr});
+                  } else {
+                    date = format(messageDate, 'dd/MM/yyyy', {locale: fr});
+                  }
 
-                    return (
-                      <View
-                        key={i}
-                        style={
-                          isMe
-                            ? styles.containerMyMessage
-                            : styles.containerMessage
-                        }>
-                        {isMe ? (
-                          <>
-                            <View style={styles.cardMyMessage}>
+                  return (
+                    <View
+                      key={i}
+                      style={
+                        isMe
+                          ? styles.containerMyMessage
+                          : styles.containerMessage
+                      }>
+                      {isMe ? (
+                        <>
+                          <View style={styles.cardMyMessage}>
+                            <Text>{m.content}</Text>
+                          </View>
+                          <Text style={styles.myDate}>{date}</Text>
+                        </>
+                      ) : (
+                        <>
+                          <View style={styles.cardMessage}>
+                            <Image
+                              source={{uri: user?.icon_url}}
+                              style={styles.avatar}
+                            />
+                            <View>
+                              <Text
+                                style={styles.name}
+                                onPress={() => {
+                                  navigation.navigate('/profile', {
+                                    user_id: user?.id,
+                                  });
+                                }}>
+                                {user?.name}
+                              </Text>
                               <Text>{m.content}</Text>
                             </View>
-                            <Text style={styles.myDate}>{date}</Text>
-                          </>
-                        ) : (
-                          <>
-                            <View style={styles.cardMessage}>
-                              <Image
-                                source={{uri: user?.icon_url}}
-                                style={styles.avatar}
-                              />
-                              <View>
-                                <Text
-                                  style={styles.name}
-                                  onPress={() => {
-                                    navigation.navigate('/profile', {
-                                      user_id: user?.id,
-                                    });
-                                  }}>
-                                  {user?.name}
-                                </Text>
-                                <Text>{m.content}</Text>
-                              </View>
-                            </View>
-                            <Text style={styles.date}>{date}</Text>
-                          </>
-                        )}
-                      </View>
-                    );
-                  })}
-                </View>
-              </ScrollView>
-              <View style={styles.containerInputs}>
-                <TextInput
-                  value={message}
-                  onChangeText={setMessage}
-                  placeholder="Message"
-                  multiline
-                  style={styles.textInput}
-                />
-                <View onTouchEnd={handlePostMessage}>
-                  <Icon name="send" size={30} color="#000" />
-                </View>
+                          </View>
+                          <Text style={styles.date}>{date}</Text>
+                        </>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
+            </ScrollView>
+            <View style={styles.containerInputs}>
+              <TextInput
+                value={message}
+                onChangeText={setMessage}
+                placeholder="Message"
+                multiline
+                style={styles.textInput}
+              />
+              <View onTouchEnd={handlePostMessage}>
+                <Icon name="send" size={30} color="#000" />
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </View>
         </KeyboardAvoidingView>
       )}
     </SafeAreaView>

@@ -35,7 +35,7 @@ export default function App(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState({
     boats: 0,
-    conversations: 3,
+    conversations: 0,
     profile: 0,
   });
 
@@ -49,6 +49,7 @@ export default function App(): React.JSX.Element {
 
     return unsubscribe;
   }, []);
+
   useEffect(() => {
     if (user) {
       const notificationsRef = ref(rtdb, `notifications/${user.uid}`);
