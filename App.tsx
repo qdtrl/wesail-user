@@ -64,6 +64,8 @@ export default function App(): React.JSX.Element {
               : 0,
             profile: data.profile ? Object.values(data.profile).length : 0,
           });
+        } else {
+          setNotifications({boats: 0, conversations: 0, profile: 0});
         }
       });
     }

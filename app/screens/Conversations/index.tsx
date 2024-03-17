@@ -1,4 +1,4 @@
-import {collection, getDocs} from 'firebase/firestore';
+import {collection, onSnapshot} from 'firebase/firestore';
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -9,11 +9,12 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import {auth, db} from '../../services/firebase';
+import {auth, db, rtdb} from '../../services/firebase';
 
 import {Icon} from '../../components';
 import {User} from 'firebase/auth';
 import ConversationProps from '../../models/conversation';
+import {onValue, ref} from 'firebase/database';
 
 const styles = StyleSheet.create({
   header: {
@@ -44,14 +45,13 @@ const styles = StyleSheet.create({
 const Conversations = ({navigation}: any) => {
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
+  const [notifications, setNotifications] = useState<String[]>([]);
   const user = auth.currentUser ? (auth.currentUser as User) : '';
 
   const getConversations = async () => {
     const conversationsRef = collection(db, 'conversations');
-    const conversationsSnapshot = await getDocs(conversationsRef);
-
-    const conversationsList: ConversationProps[] =
-      conversationsSnapshot.docs.map(doc => ({
+    onSnapshot(conversationsRef, snapshot => {
+      const conversationsList = snapshot.docs.map(doc => ({
         id: doc.id,
         name: doc.data().name,
         created_at: doc.data().created_at,
@@ -60,11 +60,29 @@ const Conversations = ({navigation}: any) => {
         admins: doc.data().admins,
       }));
 
-    setConversations(conversationsList);
-    setLoading(false);
+      setConversations(conversationsList);
+      setLoading(false);
+    });
+  };
+
+  const getNotfications = async () => {
+    const notificationsRef = ref(
+      rtdb,
+      `notifications/${auth.currentUser?.uid}/conversations`,
+    );
+
+    onValue(notificationsRef, snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        setNotifications(Object.keys(data));
+      } else {
+        setNotifications([]);
+      }
+    });
   };
 
   useEffect(() => {
+    getNotfications();
     getConversations();
   }, []);
 
@@ -98,7 +116,9 @@ const Conversations = ({navigation}: any) => {
                 <Text>{conversation.name}</Text>
                 <Text>{conversation.users.length} participants</Text>
               </View>
-
+              {notifications.includes(conversation.id) && (
+                <Icon name="circle" color="green" size={20} />
+              )}
               <Icon name="chevron-right" color="black" size={30} />
             </View>
           ))

@@ -131,7 +131,6 @@ const Conversation = ({navigation, route}: ConversationParams) => {
 
   const handleScroll = (event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-    console.log(event.nativeEvent);
 
     if (offsetY + 30 >= event.nativeEvent.layoutMeasurement.height) {
       remove(
