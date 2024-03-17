@@ -10,37 +10,10 @@ import {
   Image,
 } from 'react-native';
 import {auth, db, rtdb} from '../../services/firebase';
-
 import {Icon} from '../../components';
 import {User} from 'firebase/auth';
-import ConversationProps from '../../models/conversation';
+import {ConversationProps} from '../../models';
 import {onValue, ref} from 'firebase/database';
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  card: {
-    flexDirection: 'row',
-    gap: 20,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-  },
-  centerCard: {
-    flex: 1,
-  },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-  },
-});
 
 const Conversations = ({navigation}: any) => {
   const [loading, setLoading] = useState(true);
@@ -127,5 +100,31 @@ const Conversations = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  card: {
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+  },
+  centerCard: {
+    flex: 1,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+  },
+});
 
 export default Conversations;

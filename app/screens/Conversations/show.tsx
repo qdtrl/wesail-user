@@ -26,94 +26,7 @@ import {fr} from 'date-fns/locale';
 
 import {doc, getDoc} from 'firebase/firestore';
 import {Icon} from '../../components';
-
-type ConversationParams = {
-  navigation: any;
-  route: any;
-};
-
-type MessageProps = {
-  id: string;
-  content: string;
-  created_at: number;
-  user_id: string;
-  images: string[];
-};
-
-type UserProps = {
-  id: string;
-  name: string;
-  first_name: string;
-  last_name: string;
-  icon_url: string;
-
-  created_at: number;
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  containerMessages: {justifyContent: 'flex-end', minHeight: '100%'},
-  containerMyMessage: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    alignItems: 'flex-end',
-  },
-  containerMessage: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    alignItems: 'flex-start',
-  },
-  cardMyMessage: {
-    maxWidth: '80%',
-    margin: 10,
-    marginBottom: 0,
-    padding: 10,
-    borderRadius: 10,
-    borderBottomRightRadius: 0,
-    backgroundColor: 'lightgreen',
-  },
-  cardMessage: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 5,
-    maxWidth: '80%',
-    margin: 10,
-    marginBottom: 0,
-    padding: 10,
-    borderRadius: 10,
-    borderBottomLeftRadius: 0,
-    backgroundColor: 'lightblue',
-  },
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 25,
-  },
-  name: {fontWeight: 'bold'},
-  myDate: {marginRight: 10, fontSize: 10},
-  date: {marginLeft: 10, fontSize: 10},
-  containerInputs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 20,
-  },
-  textInput: {
-    minHeight: 60,
-    maxHeight: 200,
-    borderWidth: 0.2,
-    flex: 1,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: 'white',
-  },
-});
+import {ConversationParams, MessageProps, UserProps} from '../../models';
 
 const Conversation = ({navigation, route}: ConversationParams) => {
   const {conversation} = route.params;
@@ -305,5 +218,70 @@ const Conversation = ({navigation, route}: ConversationParams) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  containerMessages: {justifyContent: 'flex-end', minHeight: '100%'},
+  containerMyMessage: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    alignItems: 'flex-end',
+  },
+  containerMessage: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    alignItems: 'flex-start',
+  },
+  cardMyMessage: {
+    maxWidth: '80%',
+    margin: 10,
+    marginBottom: 0,
+    padding: 10,
+    borderRadius: 10,
+    borderBottomRightRadius: 0,
+    backgroundColor: 'lightgreen',
+  },
+  cardMessage: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 5,
+    maxWidth: '80%',
+    margin: 10,
+    marginBottom: 0,
+    padding: 10,
+    borderRadius: 10,
+    borderBottomLeftRadius: 0,
+    backgroundColor: 'lightblue',
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 25,
+  },
+  name: {fontWeight: 'bold'},
+  myDate: {marginRight: 10, fontSize: 10},
+  date: {marginLeft: 10, fontSize: 10},
+  containerInputs: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    gap: 20,
+  },
+  textInput: {
+    minHeight: 60,
+    maxHeight: 200,
+    borderWidth: 0.2,
+    flex: 1,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: 'white',
+  },
+});
 
 export default Conversation;

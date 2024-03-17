@@ -8,7 +8,7 @@ import {
 } from '../screens';
 import {Icon} from '../components';
 import {View} from 'react-native';
-import ConversationProps from '../models/conversation';
+import {ConversationProps} from '../models';
 
 const ConversationsStack = createNativeStackNavigator();
 export interface ConversationRouteParams {
