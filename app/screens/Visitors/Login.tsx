@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {auth} from '../../services/firebase';
@@ -16,55 +17,6 @@ import {signInWithEmailAndPassword} from 'firebase/auth';
 import {Input, Button} from '../../components';
 import Video from 'react-native-video';
 import {home_video, logo} from '../../assets';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  form: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 30,
-    height: '75%',
-    marginHorizontal: 20,
-    marginVertical: 120,
-  },
-  brand: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 0,
-  },
-  title: {
-    fontSize: 40,
-    color: '#4777EE',
-    fontWeight: 'bold',
-  },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 10,
-  },
-  inputs: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: 276,
-    gap: 20,
-  },
-  ou: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#4777EE',
-  },
-  link: {
-    marginTop: 10,
-    fontSize: 16,
-  },
-  logo: {width: 100, height: 100},
-});
 
 interface LoginProps {
   navigation: any;
@@ -87,16 +39,15 @@ const Login = ({navigation}: LoginProps) => {
   };
 
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <SafeAreaView style={StyleSheet.absoluteFill}>
       <Video
         source={home_video}
-        style={StyleSheet.absoluteFill}
+        style={styles.video}
         muted={true}
         repeat={true}
         resizeMode={'cover'}
         rate={1.0}
         ignoreSilentSwitch={'obey'}
-        opacity={0.2}
       />
       <View style={styles.container}>
         <KeyboardAvoidingView
@@ -159,8 +110,57 @@ const Login = ({navigation}: LoginProps) => {
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  video: {...StyleSheet.absoluteFillObject, opacity: 0.2},
+  form: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 30,
+    height: '90%',
+    margin: 30,
+  },
+  brand: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 0,
+  },
+  title: {
+    fontSize: 40,
+    color: '#4777EE',
+    fontWeight: 'bold',
+  },
+  buttons: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10,
+  },
+  inputs: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: 276,
+    gap: 20,
+  },
+  ou: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4777EE',
+  },
+  link: {
+    marginTop: 10,
+    fontSize: 16,
+  },
+  logo: {width: 100, height: 100},
+});
 
 export default Login;

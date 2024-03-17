@@ -33,37 +33,56 @@ const Button = ({
   outlined,
   width,
   color,
+  disabled = false,
   backgroundColor,
-}: any) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={
-      outlined
-        ? {
-            ...styles.ButtonContainer,
-            ...styles.ButtonContainerOutlined,
-            borderColor: color || '#4777EE',
-          }
-        : {
-            ...styles.ButtonContainer,
-            backgroundColor: backgroundColor || '#4777EE',
-            borderColor: backgroundColor || '#4777EE',
-          }
-    }>
-    <Text
+}: any) => {
+  let finalColor = color || '#EFEFEF';
+  let finalBackgroundColor = backgroundColor || '#4777EE';
+  if (disabled) {
+    finalColor = 'gray';
+    finalBackgroundColor = 'lightgray';
+  }
+  if (outlined) {
+    finalColor = color || '#4777EE';
+    finalBackgroundColor = 'transparent';
+  }
+
+  return (
+    <TouchableOpacity
+      disabled={disabled}
+      onPress={onPress}
       style={
         outlined
           ? {
-              ...styles.ButtonText,
-              ...styles.ButtonTextOutlined,
-              color: color || '#4777EE',
-              width,
+              ...styles.ButtonContainer,
+              ...styles.ButtonContainerOutlined,
+              borderColor: color || '#4777EE',
             }
-          : {...styles.ButtonText, width: width, color: color || '#EFEFEF'}
+          : {
+              ...styles.ButtonContainer,
+              backgroundColor: finalBackgroundColor,
+              borderColor: finalBackgroundColor,
+            }
       }>
-      {title}
-    </Text>
-  </TouchableOpacity>
-);
+      <Text
+        style={
+          outlined
+            ? {
+                ...styles.ButtonText,
+                ...styles.ButtonTextOutlined,
+                color: finalColor,
+                width,
+              }
+            : {
+                ...styles.ButtonText,
+                color: finalColor,
+                width,
+              }
+        }>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 export default Button;
