@@ -22,6 +22,7 @@ const FirstStep = ({user, setUser}: any) => {
               onChangeText={text => setUser({...user, first_name: text})}
               placeholder="Camille"
               autoCapitalize="words"
+              autoComplete="given-name"
               style={styles.input}
               placeholderTextColor="#4777EE"
             />
@@ -37,6 +38,23 @@ const FirstStep = ({user, setUser}: any) => {
               onChangeText={text => setUser({...user, last_name: text})}
               placeholder="Doe"
               autoCapitalize="words"
+              autoComplete="family-name"
+              style={styles.input}
+              placeholderTextColor="#4777EE"
+            />
+          </View>
+        </View>
+
+        <View>
+          <Text style={styles.label}>Pseudonyme</Text>
+          <View style={styles.inputGroup}>
+            <Icon name="account-cowboy-hat-outline" size={20} color="#4777EE" />
+            <TextInput
+              value={user.name}
+              onChangeText={text => setUser({...user, name: text})}
+              placeholder="CamilleDoe"
+              autoCapitalize="none"
+              autoComplete="username"
               style={styles.input}
               placeholderTextColor="#4777EE"
             />
@@ -98,6 +116,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: '#4777EE',
+    width: 250,
   },
 });
 

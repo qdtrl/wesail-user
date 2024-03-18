@@ -10,19 +10,16 @@ import {
   Keyboard,
   Platform,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
 import React, {useState} from 'react';
 import {auth} from '../../services/firebase';
 import {signInWithEmailAndPassword} from 'firebase/auth';
-import {Input, Button} from '../../components';
+import {Button, Icon} from '../../components';
 import Video from 'react-native-video';
 import {home_video, logo} from '../../assets';
 
-interface LoginProps {
-  navigation: any;
-}
-
-const Login = ({navigation}: LoginProps) => {
+const Login = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,19 +56,30 @@ const Login = ({navigation}: LoginProps) => {
                 <Text style={styles.title}>WeSail</Text>
               </View>
               <View style={styles.inputs}>
-                <Input
-                  placeholder="Email"
-                  value={email}
-                  setValue={setEmail}
-                  autoCapitalize="none"
-                />
+                <View style={styles.inputGroup}>
+                  <Icon name="at" size={20} color="#4777EE" />
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={text => setEmail(text.toLocaleLowerCase())}
+                    value={email}
+                    placeholder="Email"
+                    autoComplete={'email'}
+                    placeholderTextColor="#4777EE"
+                  />
+                </View>
 
-                <Input
-                  placeholder="Mot de passe"
-                  value={password}
-                  setValue={setPassword}
-                  secureTextEntry={true}
-                />
+                <View style={styles.inputGroup}>
+                  <Icon name="lock" size={20} color="#4777EE" />
+                  <TextInput
+                    style={styles.input}
+                    secureTextEntry={true}
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    placeholder="Mot de passe"
+                    autoComplete="current-password"
+                    placeholderTextColor="#4777EE"
+                  />
+                </View>
               </View>
 
               {loading ? (
@@ -150,6 +158,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 276,
     gap: 20,
+  },
+  input: {
+    color: '#4777EE',
+    width: 250,
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    padding: 15,
+    borderLeftWidth: 1,
+    borderColor: '#4777EE',
+    width: 280,
   },
   ou: {
     fontSize: 20,

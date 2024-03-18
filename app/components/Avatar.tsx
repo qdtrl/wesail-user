@@ -6,17 +6,38 @@ interface AvatarParams {
   icon: string;
   size: number;
   color: string;
+  border: string;
 }
 
-const Avatar = ({icon, size, color = 'black'}: AvatarParams) => {
+const Avatar = ({
+  icon,
+  size,
+  color = 'black',
+  border = 'transparent',
+}: AvatarParams) => {
   return (
     <>
       {icon ? (
-        <Image
-          source={{uri: icon}}
-          style={{...styles.avatar, width: size, height: size}}
-        />
+        <View
+          //@ts-ignore
+          style={{
+            ...styles.avatar,
+            width: size + 2,
+            height: size + 2,
+            backgroundColor: border,
+          }}>
+          <Image
+            source={{uri: icon}}
+            //@ts-ignore
+            style={{
+              ...styles.avatar,
+              width: size,
+              height: size,
+            }}
+          />
+        </View>
       ) : (
+        //@ts-ignore
         <View style={{...styles.avatar, width: size, height: size}}>
           <Icon name="account" size={size} color={color} />
         </View>
@@ -30,7 +51,9 @@ const styles = {
     width: 50,
     height: 50,
     borderRadius: 50,
-    backgroundColor: 'lightgrey',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: 'lightgray',
   },
 };
 

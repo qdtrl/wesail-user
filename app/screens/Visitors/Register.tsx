@@ -1,6 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../../services/firebase';
+import React, {useState} from 'react';
+import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
+import {doc, setDoc, serverTimestamp} from 'firebase/firestore';
+
+import {auth, db} from '../../services/firebase';
 import {
   View,
   Text,
@@ -9,7 +11,6 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
-  Alert,
   SafeAreaView,
 } from 'react-native';
 import {Button, Icon} from '../../components';
@@ -20,26 +21,22 @@ import FirstStep from './Register/FirstStep';
 import SecondStep from './Register/SecondStep';
 import ThirdStep from './Register/ThirdStep';
 
-interface RegisterProps {
-  navigation: any;
-}
-
-const Register = ({navigation}: RegisterProps) => {
+const Register = ({navigation}: any) => {
   const [step, setStep] = useState(1);
   const [user, setUser] = useState({
+    name: '',
     first_name: '',
     last_name: '',
     birth_date: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
     terms_accepted: false,
+    icon_url: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const [avatar, setAvatar] = useState('');
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+  const [avatar, setAvatar] = useState('');
+  const [error, setError] = useState({email: false, password: false, text: ''});
 
   const handleStep = () => {
     switch (step) {
@@ -55,7 +52,7 @@ const Register = ({navigation}: RegisterProps) => {
           />
         );
       case 3:
-        return <ThirdStep user={user} setUser={setUser} />;
+        return <ThirdStep user={user} setUser={setUser} error={error} />;
       default:
         return null;
     }
@@ -64,35 +61,95 @@ const Register = ({navigation}: RegisterProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    try {
-      setLoading(true);
-      await createUserWithEmailAndPassword(auth, user.email, user.password);
-    } catch (error) {
-      Alert.alert('Erreur', (error as Error).message);
-      console.error(error);
-    } finally {
-      setLoading(false);
+    setLoading(true);
+    const go = handleSubmitDisabled();
+
+    if (!go) {
+      return;
     }
+
+    createUserWithEmailAndPassword(auth, user.email, user.password)
+      .then(async userCredential => {
+        const usersRef = doc(db, 'users', userCredential.user.uid);
+
+        await setDoc(usersRef, {
+          name: user.name,
+          icon_url: user.icon_url,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          birth_date: user.birth_date,
+          terms_accepted: user.terms_accepted,
+          created_at: serverTimestamp(),
+        });
+
+        await updateProfile(userCredential.user, {
+          displayName: user.name,
+          photoURL: user.icon_url,
+        });
+      })
+      .catch(catchError => {
+        if (catchError.code === 'auth/email-already-in-use') {
+          setError({
+            email: true,
+            password: false,
+            text: '* Cet email est déjà utilisé',
+          });
+        } else {
+          setError({email: true, password: false, text: catchError.message});
+        }
+
+        setLoading(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleNextDisabled = () => {
     if (step === 1) {
       return (
+        !(user.name.length >= 3) ||
         !(user.first_name.length >= 3) ||
         !(user.last_name.length >= 3) ||
         !user.birth_date
       );
     } else if (step === 2) {
-      return !user.terms_accepted;
+      return !user.terms_accepted || (avatar && !user.icon_url);
     } else {
-      return (
-        !user.email ||
-        !user.password ||
-        !user.confirmPassword ||
-        user.password !== user.confirmPassword
-      );
+      return !user.email || !user.password || !user.confirmPassword;
     }
   };
+
+  const handleSubmitDisabled = () => {
+    if (user.password !== user.confirmPassword) {
+      setError({
+        email: false,
+        password: true,
+        text: '* Les mots de passe ne correspondent pas',
+      });
+      return false;
+    }
+    if (user.password.length < 6) {
+      setError({
+        email: false,
+        password: true,
+        text: '* Le mot de passe doit contenir au moins 6 caractères',
+      });
+      return false;
+    }
+    if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(user.email)) {
+      setError({
+        email: true,
+        password: false,
+        text: "* L'email n'est pas valide",
+      });
+      return false;
+    }
+    setError({email: false, password: false, text: ''});
+    return true;
+  };
+
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
       <Video

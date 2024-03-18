@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
-  Image,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {auth, db, rtdb} from '../../services/firebase';
@@ -25,7 +24,7 @@ import {format} from 'date-fns';
 import {fr} from 'date-fns/locale';
 
 import {doc, getDoc} from 'firebase/firestore';
-import {Icon} from '../../components';
+import {Avatar, Icon} from '../../components';
 import {ConversationParams, MessageProps, UserProps} from '../../models';
 
 const Conversation = ({navigation, route}: ConversationParams) => {
@@ -174,23 +173,23 @@ const Conversation = ({navigation, route}: ConversationParams) => {
                         </>
                       ) : (
                         <>
-                          <View style={styles.cardMessage}>
-                            <Image
-                              source={{uri: user?.icon_url}}
-                              style={styles.avatar}
+                          <View
+                            style={styles.cardUser}
+                            onTouchEnd={() => {
+                              navigation.navigate('/profile', {
+                                user_id: user?.id,
+                              });
+                            }}>
+                            <Avatar
+                              icon={user?.icon_url || ''}
+                              size={25}
+                              color="black"
+                              border="transparent"
                             />
-                            <View>
-                              <Text
-                                style={styles.name}
-                                onPress={() => {
-                                  navigation.navigate('/profile', {
-                                    user_id: user?.id,
-                                  });
-                                }}>
-                                {user?.name}
-                              </Text>
-                              <Text>{m.content}</Text>
-                            </View>
+                            <Text style={styles.name}>{user?.name}</Text>
+                          </View>
+                          <View style={styles.cardMessage}>
+                            <Text>{m.content}</Text>
                           </View>
                           <Text style={styles.date}>{date}</Text>
                         </>
@@ -238,8 +237,8 @@ const styles = StyleSheet.create({
   },
   cardMyMessage: {
     maxWidth: '80%',
-    margin: 10,
-    marginBottom: 0,
+    marginHorizontal: 10,
+    marginVertical: 0,
     padding: 10,
     borderRadius: 10,
     borderBottomRightRadius: 0,
@@ -250,17 +249,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 5,
     maxWidth: '80%',
-    margin: 10,
-    marginBottom: 0,
+    marginHorizontal: 10,
+    marginVertical: 0,
     padding: 10,
     borderRadius: 10,
     borderBottomLeftRadius: 0,
     backgroundColor: 'lightblue',
   },
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 25,
+  cardUser: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 2,
+    gap: 2,
   },
   name: {fontWeight: 'bold'},
   myDate: {marginRight: 10, fontSize: 10},

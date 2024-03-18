@@ -13,12 +13,18 @@ import {
   ProfileRouter,
 } from './app/routing';
 
-import {Icon} from './app/components';
+import {Avatar, Icon} from './app/components';
 import {onValue, ref} from 'firebase/database';
 
 const VisitorsStack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
+
+type IconProfileProps = {
+  color: string;
+  size: number;
+  url: string | null;
+};
 
 type TabIconProps = {
   name: string;
@@ -29,6 +35,14 @@ type TabIconProps = {
 const TabIcon = ({name, color, size}: TabIconProps) => (
   <Icon name={name} color={color} size={size} />
 );
+
+const IconProfile = ({color, size, url}: IconProfileProps) => {
+  if (url) {
+    return <Avatar icon={url} size={size} color={color} border={color} />;
+  } else {
+    return TabIcon({name: 'account', color, size});
+  }
+};
 
 export default function App(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
@@ -44,6 +58,7 @@ export default function App(): React.JSX.Element {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, res => {
       setUser(res);
+
       setLoading(false);
     });
 
@@ -124,7 +139,8 @@ export default function App(): React.JSX.Element {
               headerShown: false,
               tabBarBadge:
                 notifications.profile !== 0 ? notifications.profile : undefined,
-              tabBarIcon: ({color}) => TabIcon({name: 'account', color, size}),
+              tabBarIcon: ({color}) =>
+                IconProfile({color, size, url: user.photoURL}),
             }}
           />
         </Tab.Navigator>
