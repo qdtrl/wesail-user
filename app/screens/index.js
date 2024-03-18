@@ -10,6 +10,9 @@ import Event from './Feed/show';
 
 // Boats
 import Boats from './Boats';
+import Boat from './Boats/show';
+import CreateBoat from './Boats/create';
+import UpdateBoat from './Boats/update';
 
 // Conversations
 import Conversations from './Conversations';
@@ -25,9 +28,12 @@ export {
   Login,
   Register,
   ForgotPassword,
-  Boats,
   Feed,
   Event,
+  Boats,
+  Boat,
+  CreateBoat,
+  UpdateBoat,
   Conversations,
   Conversation,
   CreateConversation,

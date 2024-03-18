@@ -29,3 +29,17 @@ export type ConversationProps = {
   users: string[];
   admins: string[];
 };
+
+export type BoatProps = {
+  id: string;
+  name: string;
+  type: string;
+  number: number;
+  club: string;
+  image: string;
+  owners: string[];
+  crew: string[];
+  sponsors: string[];
+  images: string[];
+  created_at: string;
+};

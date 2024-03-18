@@ -20,11 +20,12 @@ const Avatar = ({
       {icon ? (
         <View
           //@ts-ignore
+          // eslint-disable-next-line react-native/no-inline-styles
           style={{
             ...styles.avatar,
             width: size + 2,
             height: size + 2,
-            backgroundColor: border,
+            backgroundColor: border === 'gray' ? 'transparent' : border,
           }}>
           <Image
             source={{uri: icon}}

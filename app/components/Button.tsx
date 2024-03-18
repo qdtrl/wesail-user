@@ -2,7 +2,6 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity, Text} from 'react-native';
 
 const styles = StyleSheet.create({
-  // ...
   ButtonContainer: {
     elevation: 8,
     backgroundColor: '#4777EE',
