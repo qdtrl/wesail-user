@@ -88,6 +88,7 @@ const CreateConversation = () => {
   useEffect(() => {
     getUserData();
   }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>

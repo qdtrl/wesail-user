@@ -1,10 +1,9 @@
-import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {SearchUsers} from '../../../components';
 import {UserProps} from '../../../models';
 import {collection, getDocs} from 'firebase/firestore';
 import {db} from '../../../services/firebase';
-import {set} from 'date-fns';
 
 const SecondStep = ({boat, setBoat}: any) => {
   const [userData, setUserData] = useState<UserProps[]>([]);
@@ -42,6 +41,7 @@ const SecondStep = ({boat, setBoat}: any) => {
     const newCrew = [...new Set([...crew, ...owners])];
     setBoat({...boat, crew: newCrew, owners});
     setCrew(newCrew);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [crew, owners]);
 
   return (

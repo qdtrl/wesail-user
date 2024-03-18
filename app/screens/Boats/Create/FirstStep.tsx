@@ -29,7 +29,7 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
         />
       </View>
       <View>
-        <Text style={styles.label}>Nom</Text>
+        <Text style={styles.label}>Nom *</Text>
         <View style={styles.inputGroup}>
           <Icon name="account-edit" size={20} color="#4777EE" />
           <TextInput
@@ -43,7 +43,7 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
         </View>
       </View>
       <View>
-        <Text style={styles.label}>Numéro</Text>
+        <Text style={styles.label}>Numéro *</Text>
         <View style={styles.inputGroup}>
           <Icon name="account-edit" size={20} color="#4777EE" />
           <TextInput
@@ -58,7 +58,7 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
         </View>
       </View>
       <View>
-        <Text style={styles.label}>Type</Text>
+        <Text style={styles.label}>Type *</Text>
         <View style={styles.inputGroup}>
           <Icon name="account-edit" size={20} color="#4777EE" />
           <TextInput

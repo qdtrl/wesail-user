@@ -9,17 +9,22 @@ import {
   ActivityIndicator,
   ScrollView,
   Platform,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Button} from '../../components';
 import FirstStep from './Create/FirstStep';
 import SecondStep from './Create/SecondStep';
 import ThirdStep from './Create/ThirdStep';
+import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
+import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
+import {auth, db, storage} from '../../services/firebase';
 
 const CreateBoat = ({navigation}: any) => {
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [step, setStep] = useState(1);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState({uri: ''});
   const [boat, setBoat] = useState({
     image_url: '',
     name: '',
@@ -39,10 +44,6 @@ const CreateBoat = ({navigation}: any) => {
     water: 0,
     year: 0,
   });
-
-  useEffect(() => {
-    console.log(boat);
-  }, [boat]);
 
   const handleStep = () => {
     switch (step) {
@@ -75,11 +76,51 @@ const CreateBoat = ({navigation}: any) => {
     } else if (step === 2) {
       return !(boat.crew.length > 0) || !(boat.owners.length > 0);
     } else {
-      return !boat.club || !boat.length || !boat.year;
+      return !boat.club || !boat.length || !boat.year || !boat.draft;
     }
   };
 
-  const handleCreate = async () => {};
+  useEffect(() => {
+    if (boat.image_url !== '') {
+      addDoc(collection(db, 'boats'), {
+        ...boat,
+        owners: [...boat.owners, auth?.currentUser?.uid],
+        crew: [...boat.crew, auth?.currentUser?.uid],
+        created_at: serverTimestamp(),
+      }).then(() => {
+        setLoading(false);
+        navigation.navigate('/boats');
+      });
+    }
+  }, [boat, navigation]);
+
+  const handleCreate = async () => {
+    setLoading(true);
+    const storageRef = ref(storage, `boats/image/${boat.name}`);
+    const load = await fetch(image.uri);
+    const blob = await load.blob();
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        const ratio = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(ratio);
+      },
+      error => {
+        Alert.alert(
+          error.code,
+          "Une erreur est survenue lors de l'envoi de votre image de profil",
+        );
+        setLoading(false);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+          setBoat({...boat, image_url: downloadURL});
+        });
+      },
+    );
+  };
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
@@ -121,46 +162,51 @@ const CreateBoat = ({navigation}: any) => {
             style={styles.stepsContainer}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={150}>
-            <View style={styles.form}>{handleStep()}</View>
+            <ScrollView>
+              <View style={styles.form}>{handleStep()}</View>
 
-            <View style={styles.buttonsContainer}>
-              {loading ? (
-                <ActivityIndicator size="large" />
-              ) : (
-                <View style={styles.buttons}>
-                  {step !== 1 ? (
-                    <Button
-                      title="Retour"
-                      accessibilityLabel="Button pour revenir à la page précédente"
-                      color="#4777EE"
-                      outlined={true}
-                      width={100}
-                      backgroundColor="transparent"
-                      onPress={() => setStep(step - 1)}
-                    />
-                  ) : (
-                    <View />
-                  )}
-                  {step === 3 ? (
-                    <Button
-                      title="Créer"
-                      width={100}
-                      disabled={handleNextDisabled()}
-                      accessibilityLabel="Button pour créer le bateau"
-                      onPress={handleCreate}
-                    />
-                  ) : (
-                    <Button
-                      title="Suivant"
-                      width={100}
-                      disabled={handleNextDisabled()}
-                      accessibilityLabel="Button pour passer à l'étape suivante"
-                      onPress={() => setStep(step + 1)}
-                    />
-                  )}
-                </View>
-              )}
-            </View>
+              <View style={styles.buttonsContainer}>
+                {loading ? (
+                  <View>
+                    <ActivityIndicator size="large" />
+                    <Text>{Math.round(progress)}%</Text>
+                  </View>
+                ) : (
+                  <View style={styles.buttons}>
+                    {step !== 1 ? (
+                      <Button
+                        title="Retour"
+                        accessibilityLabel="Button pour revenir à la page précédente"
+                        color="#4777EE"
+                        outlined={true}
+                        width={100}
+                        backgroundColor="transparent"
+                        onPress={() => setStep(step - 1)}
+                      />
+                    ) : (
+                      <View />
+                    )}
+                    {step === 3 ? (
+                      <Button
+                        title="Créer"
+                        width={100}
+                        disabled={handleNextDisabled()}
+                        accessibilityLabel="Button pour créer le bateau"
+                        onPress={handleCreate}
+                      />
+                    ) : (
+                      <Button
+                        title="Suivant"
+                        width={100}
+                        disabled={handleNextDisabled()}
+                        accessibilityLabel="Button pour passer à l'étape suivante"
+                        onPress={() => setStep(step + 1)}
+                      />
+                    )}
+                  </View>
+                )}
+              </View>
+            </ScrollView>
           </KeyboardAvoidingView>
         </View>
       </TouchableWithoutFeedback>
@@ -177,7 +223,7 @@ const styles = StyleSheet.create({
   stepsContainer: {
     display: 'flex',
     flexDirection: 'column',
-    height: '80%',
+    height: '100%',
     gap: 20,
     width: '100%',
     paddingVertical: 20,
@@ -213,6 +259,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    marginVertical: 20,
     width: '100%',
     gap: 20,
   },
@@ -222,6 +269,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: 30,
+    marginBottom: 60,
   },
 });
 
