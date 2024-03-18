@@ -1,6 +1,6 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Boats, Boat} from '../screens';
+import {Boats, Boat, CreateBoat, UpdateBoat} from '../screens';
 import {View} from 'react-native';
 import {Icon} from '../components';
 import {BoatProps} from '../models';
@@ -35,12 +35,12 @@ const BoatsRouter = () => {
       />
       <BoatsStack.Screen
         name="/boats/create"
-        component={Boat}
+        component={CreateBoat}
         options={{title: 'Nouveau bateau'}}
       />
       <BoatsStack.Screen
         name="/boats/update"
-        component={Boat}
+        component={UpdateBoat}
         options={{title: ''}}
       />
     </BoatsStack.Navigator>

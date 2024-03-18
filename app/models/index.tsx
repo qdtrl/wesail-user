@@ -33,13 +33,22 @@ export type ConversationProps = {
 export type BoatProps = {
   id: string;
   name: string;
-  type: string;
-  number: number;
-  club: string;
-  image: string;
+  number: string;
+  boat_type: string;
+  image_url: string;
   owners: string[];
   crew: string[];
+  club: string;
   sponsors: string[];
   images: string[];
+  length: number;
+  width: number;
+  draft: number;
+  weight: number;
+  sail_area: number;
+  engine: string;
+  fuel: string;
+  water: number;
+  year: number;
   created_at: string;
 };

@@ -24,16 +24,25 @@ const Boats = ({navigation}: any) => {
     onSnapshot(boatsRef, snapshot => {
       const boatsList = snapshot.docs.map(res => ({
         id: res.id,
+        image_url: res.data().image_url,
         name: res.data().name,
+        boat_type: res.data().boat_type,
+        number: res.data().number,
+        owners: res.data().owners,
+        crew: res.data().crew,
         club: res.data().club,
         created_at: res.data().created_at,
         images: res.data().images,
-        crew: res.data().crew,
-        owners: res.data().owners,
         sponsors: res.data().sponsors,
-        type: res.data().type,
-        number: res.data().number,
-        image: res.data().image,
+        length: res.data().length,
+        width: res.data().width,
+        draft: res.data().draft,
+        weight: res.data().weight,
+        sail_area: res.data().sail_area,
+        engine: res.data().engine,
+        fuel: res.data().fuel,
+        water: res.data().water,
+        year: res.data().year,
       }));
 
       setBoats(boatsList);
@@ -57,7 +66,6 @@ const Boats = ({navigation}: any) => {
             {boats.map(boat => (
               <>
                 <View
-                  key={boat.id}
                   style={styles.card}
                   onTouchEnd={() =>
                     navigation.navigate('/boats/show', {
@@ -66,13 +74,13 @@ const Boats = ({navigation}: any) => {
                   }>
                   <Image
                     key={boat.id}
-                    source={{uri: boat?.image}}
+                    source={{uri: boat?.image_url}}
                     style={styles.image}
                   />
                   <View style={styles.infos}>
                     <View>
                       <Text style={styles.title}>{boat.name}</Text>
-                      <Text>{boat.type}</Text>
+                      <Text>{boat.boat_type}</Text>
                     </View>
                     <View style={styles.textsRight}>
                       <Text style={styles.number}>{boat.number}</Text>
@@ -89,7 +97,6 @@ const Boats = ({navigation}: any) => {
                   title="Nouveau Bateau +"
                   onPress={() => navigation.navigate('/boats/create')}
                   outlined
-                  // width={50}
                 />
               </View>
             </View>
@@ -119,6 +126,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     borderRadius: 10,
+    backgroundColor: 'lightgray',
     height: 200,
     justifyContent: 'flex-end',
   },

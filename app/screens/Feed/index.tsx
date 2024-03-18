@@ -97,6 +97,7 @@ const Feed = ({navigation}: any) => {
           <View style={styles.container}>
             {events.map(event => (
               <View
+                key={event.id}
                 style={styles.card}
                 onTouchEnd={() =>
                   navigation.navigate('/events/show', {
@@ -105,7 +106,6 @@ const Feed = ({navigation}: any) => {
                   })
                 }>
                 <ImageBackground
-                  key={event.id}
                   source={{uri: event?.cover_url}}
                   style={styles.image}>
                   <View style={styles.infos}>

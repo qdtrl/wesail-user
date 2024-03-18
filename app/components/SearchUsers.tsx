@@ -31,14 +31,27 @@ const SearchUsers = ({label, data, values, setValues}: SearchUsersParams) => {
       />
       <ScrollView style={styles.scrollview}>
         {data
-          .filter(x => x.name.toLowerCase().includes(search.toLowerCase()))
-          .map(user => (
+          .filter(
+            x =>
+              x?.name?.toLowerCase().includes(search.toLowerCase()) ||
+              x?.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+              x?.last_name?.toLowerCase().includes(search.toLowerCase()) ||
+              `${x?.first_name} ${x?.last_name}`
+                .toLowerCase()
+                .includes(search.toLowerCase()),
+          )
+          .map((user, index) => (
             <View
-              key={user.id}
+              key={index}
               onTouchEnd={() => handleSelect(user.id)}
               style={styles.card}>
               <View style={styles.containerUser}>
-                <Avatar icon={user.icon_url} size={25} />
+                <Avatar
+                  icon={user.icon_url}
+                  size={25}
+                  color="black"
+                  border={'transparent'}
+                />
                 <Text>{user.first_name + ' ' + user.last_name}</Text>
               </View>
               {values.includes(user.id) ? (
