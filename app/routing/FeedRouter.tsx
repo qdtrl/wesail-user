@@ -17,6 +17,7 @@ const FeedRouter = () => {
         component={Event}
         options={({route}) => ({
           title: (route.params as {event: any}).event.name,
+          headerShown: false,
         })}
       />
     </FeedStack.Navigator>

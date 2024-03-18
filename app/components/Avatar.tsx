@@ -54,6 +54,7 @@ const styles = {
     justifyContent: 'center',
     alignSelf: 'center',
     backgroundColor: 'lightgray',
+    opacity: 1,
   },
 };
 

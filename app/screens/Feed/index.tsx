@@ -38,20 +38,20 @@ const Feed = ({navigation}: any) => {
   const getEvents = async () => {
     const eventsRef = collection(db, 'events');
     onSnapshot(eventsRef, snapshot => {
-      const eventsList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        club_id: doc.data().club_id,
-        name: doc.data().name,
-        description: doc.data().description,
-        start_date: doc.data().start_date,
-        end_date: doc.data().end_date,
-        created_at: doc.data().created_at,
-        cover_url: doc.data().cover_url,
-        sponsor: doc.data().sponsor,
-        address: doc.data().address,
-        city: doc.data().city,
-        zipcode: doc.data().zipcode,
-        images: doc.data().images,
+      const eventsList = snapshot.docs.map(res => ({
+        id: res.id,
+        club_id: res.data().club_id,
+        name: res.data().name,
+        description: res.data().description,
+        start_date: res.data().start_date,
+        end_date: res.data().end_date,
+        created_at: res.data().created_at,
+        cover_url: res.data().cover_url,
+        sponsor: res.data().sponsor,
+        address: res.data().address,
+        city: res.data().city,
+        zipcode: res.data().zipcode,
+        images: res.data().images,
       }));
 
       setEvents(eventsList);
@@ -86,8 +86,6 @@ const Feed = ({navigation}: any) => {
     getEvents();
   }, []);
 
-  console.log(clubs);
-
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
       {loading ? (
@@ -100,7 +98,12 @@ const Feed = ({navigation}: any) => {
             {events.map(event => (
               <View
                 style={styles.card}
-                onTouchEnd={() => navigation.navigate('/events/show', {event})}>
+                onTouchEnd={() =>
+                  navigation.navigate('/events/show', {
+                    event,
+                    club: clubs.find(club => club.id === event.club_id),
+                  })
+                }>
                 <ImageBackground
                   key={event.id}
                   source={{uri: event?.cover_url}}
@@ -109,10 +112,11 @@ const Feed = ({navigation}: any) => {
                     <View>
                       <Text style={styles.title}>{event.name}</Text>
                       <Text style={styles.text}>
-                        {format(new Date(event.start_date), 'dd MMMM yyyy', {
+                        du{' '}
+                        {format(new Date(event.start_date), 'dd', {
                           locale: fr,
                         })}{' '}
-                        -{' '}
+                        au{' '}
                         {format(new Date(event.end_date), 'dd MMMM yyyy', {
                           locale: fr,
                         })}
