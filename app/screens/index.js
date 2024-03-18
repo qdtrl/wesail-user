@@ -6,6 +6,7 @@ import ForgotPassword from './Visitors/ForgotPassword';
 
 // Feed
 import Feed from './Feed';
+import Event from './Feed/show';
 
 // Boats
 import Boats from './Boats';
@@ -26,6 +27,7 @@ export {
   ForgotPassword,
   Boats,
   Feed,
+  Event,
   Conversations,
   Conversation,
   CreateConversation,
