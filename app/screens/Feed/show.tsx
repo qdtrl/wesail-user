@@ -18,7 +18,6 @@ const Event = ({navigation, route}: any) => {
 
   const event = route.params.event;
   const club = route.params.club;
-  console.log(event);
 
   useEffect(() => {
     setLoading(false);
@@ -140,7 +139,6 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    // alignItems: 'center',
     gap: 20,
     margin: 10,
   },
