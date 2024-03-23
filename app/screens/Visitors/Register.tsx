@@ -87,6 +87,10 @@ const Register = ({ navigation }: any) => {
           last_name: user.last_name,
           birth_date: user.birth_date,
           terms_accepted: user.terms_accepted,
+          followers: [],
+          following: [],
+          friends: [],
+          blocked: [],
           created_at: serverTimestamp()
         })
 
