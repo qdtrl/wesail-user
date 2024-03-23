@@ -5,22 +5,22 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
-  Image,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
+  Image
+} from 'react-native'
+import React, { useEffect, useState } from 'react'
 
-import {db} from '../../services/firebase';
+import { db } from '../../services/firebase'
 
-import {collection, onSnapshot} from 'firebase/firestore';
-import {Button} from '../../components';
-import {BoatProps} from '../../models';
+import { collection, onSnapshot } from 'firebase/firestore'
+import { Button } from '../../components'
+import { BoatProps } from '../../models'
 
-const Boats = ({navigation}: any) => {
-  const [boats, setBoats] = useState<BoatProps[]>([]);
-  const [loading, setLoading] = useState(true);
+const Boats = ({ navigation }: any) => {
+  const [boats, setBoats] = useState<BoatProps[]>([])
+  const [loading, setLoading] = useState(true)
 
   const getBoats = async () => {
-    const boatsRef = collection(db, 'boats');
+    const boatsRef = collection(db, 'boats')
     onSnapshot(boatsRef, snapshot => {
       const boatsList = snapshot.docs.map(res => ({
         id: res.id,
@@ -42,17 +42,17 @@ const Boats = ({navigation}: any) => {
         engine: res.data().engine,
         fuel: res.data().fuel,
         water: res.data().water,
-        year: res.data().year,
-      }));
+        year: res.data().year
+      }))
 
-      setBoats(boatsList);
-      setLoading(false);
-    });
-  };
+      setBoats(boatsList)
+      setLoading(false)
+    })
+  }
 
   useEffect(() => {
-    getBoats();
-  }, []);
+    getBoats()
+  }, [])
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
@@ -69,12 +69,12 @@ const Boats = ({navigation}: any) => {
                   style={styles.card}
                   onTouchEnd={() =>
                     navigation.navigate('/boats/show', {
-                      boat,
+                      boat
                     })
                   }>
                   <Image
                     key={boat.id}
-                    source={{uri: boat?.image_url}}
+                    source={{ uri: boat?.image_url }}
                     style={styles.image}
                   />
                   <View style={styles.infos}>
@@ -104,59 +104,63 @@ const Boats = ({navigation}: any) => {
         </ScrollView>
       )}
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
-  loader: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  loader: {
+    height: '88%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   container: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingHorizontal: 10,
+    padding: 10,
     gap: 15,
-    width: '100%',
+    width: '100%'
   },
   card: {
     overflow: 'hidden',
-    width: '100%',
+    width: '100%'
   },
   image: {
     width: '100%',
     borderRadius: 10,
     backgroundColor: 'lightgray',
     height: 200,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   infos: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
-    paddingVertical: 1,
+    paddingVertical: 1
   },
   textsRight: {
-    alignItems: 'flex-end',
+    alignItems: 'flex-end'
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   number: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   line: {
     width: '35%',
     height: 1,
-    backgroundColor: 'lightgray',
+    backgroundColor: 'lightgray'
   },
   buttonCreateContainer: {
     width: '100%',
     alignItems: 'flex-end',
-    marginTop: 50,
-  },
-});
+    marginTop: 50
+  }
+})
 
-export default Boats;
+export default Boats

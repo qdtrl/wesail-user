@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -6,37 +6,38 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  ImageBackground,
-} from 'react-native';
-import {db} from '../../services/firebase';
+  ImageBackground
+} from 'react-native'
+import { db } from '../../services/firebase'
 
-import {collection, onSnapshot, doc, getDoc} from 'firebase/firestore';
-import {format} from 'date-fns';
-import {fr} from 'date-fns/locale';
+import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 type EventProps = {
-  id: string;
-  club_id: string;
-  name: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  created_at: string;
-  cover_url: string;
-  sponsor: string;
-  address: string;
-  city: string;
-  zipcode: string;
-  images: string[];
-};
+  id: string
+  club_id: string
+  name: string
+  description: string
+  start_date: string
+  end_date: string
+  created_at: string
+  cover_url: string
+  sponsor: string
+  address: string
+  city: string
+  zipcode: string
+  images: string[]
+}
 
-const Feed = ({navigation}: any) => {
-  const [events, setEvents] = useState<EventProps[]>([]);
-  const [clubs, setClubs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+const Feed = ({ navigation }: any) => {
+  const [events, setEvents] = useState<EventProps[]>([])
+  const [clubs, setClubs] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  console.log(loading)
 
   const getEvents = async () => {
-    const eventsRef = collection(db, 'events');
+    const eventsRef = collection(db, 'events')
     onSnapshot(eventsRef, snapshot => {
       const eventsList = snapshot.docs.map(res => ({
         id: res.id,
@@ -51,40 +52,37 @@ const Feed = ({navigation}: any) => {
         address: res.data().address,
         city: res.data().city,
         zipcode: res.data().zipcode,
-        images: res.data().images,
-      }));
+        images: res.data().images
+      }))
 
-      setEvents(eventsList);
-      setLoading(false);
-    });
-  };
+      setEvents(eventsList)
+    })
+  }
 
   useEffect(() => {
     const getClub = async (clubId: string) => {
-      const clubDoc = await getDoc(doc(db, 'clubs', clubId));
+      const clubDoc = await getDoc(doc(db, 'clubs', clubId))
       if (clubDoc.exists()) {
-        return {...clubDoc.data(), id: clubDoc.id};
+        return { ...clubDoc.data(), id: clubDoc.id }
       }
-    };
+    }
 
     const getClubs = async () => {
-      setLoading(true);
+      const clubPromises = events.map(event => getClub(event.club_id))
 
-      const clubPromises = events.map(event => getClub(event.club_id));
-
-      const clubsList = await Promise.all(clubPromises);
-      return clubsList;
-    };
+      const clubsList = await Promise.all(clubPromises)
+      return clubsList
+    }
 
     getClubs().then(clubsList => {
-      setClubs(clubsList);
-      setLoading(false);
-    });
-  }, [events]);
+      setClubs(clubsList)
+      setLoading(false)
+    })
+  }, [events])
 
   useEffect(() => {
-    getEvents();
-  }, []);
+    getEvents()
+  }, [])
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
@@ -102,11 +100,11 @@ const Feed = ({navigation}: any) => {
                 onTouchEnd={() =>
                   navigation.navigate('/events/show', {
                     event,
-                    club: clubs.find(club => club.id === event.club_id),
+                    club: clubs.find(club => club.id === event.club_id)
                   })
                 }>
                 <ImageBackground
-                  source={{uri: event?.cover_url}}
+                  source={{ uri: event?.cover_url }}
                   style={styles.image}>
                   <View style={styles.infos}>
                     <View>
@@ -114,11 +112,11 @@ const Feed = ({navigation}: any) => {
                       <Text style={styles.text}>
                         du{' '}
                         {format(new Date(event.start_date), 'dd', {
-                          locale: fr,
+                          locale: fr
                         })}{' '}
                         au{' '}
                         {format(new Date(event.end_date), 'dd MMMM yyyy', {
-                          locale: fr,
+                          locale: fr
                         })}
                       </Text>
                     </View>
@@ -136,47 +134,47 @@ const Feed = ({navigation}: any) => {
         </ScrollView>
       )}
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
-  loader: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   container: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: 20,
-    marginHorizontal: 10,
+    margin: 10
   },
   card: {
     borderRadius: 10,
     overflow: 'hidden',
     width: '100%',
-    height: 200,
+    height: 200
   },
   image: {
     width: '100%',
     height: '100%',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   infos: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   textsRight: {
-    alignItems: 'flex-end',
+    alignItems: 'flex-end'
   },
   title: {
     color: 'white',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   text: {
-    color: 'white',
-  },
-});
+    color: 'white'
+  }
+})
 
-export default Feed;
+export default Feed
