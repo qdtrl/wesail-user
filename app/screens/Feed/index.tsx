@@ -34,7 +34,6 @@ const Feed = ({ navigation }: any) => {
   const [events, setEvents] = useState<EventProps[]>([])
   const [clubs, setClubs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  console.log(loading)
 
   const getEvents = async () => {
     const eventsRef = collection(db, 'events')

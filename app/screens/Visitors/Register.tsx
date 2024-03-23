@@ -91,6 +91,7 @@ const Register = ({ navigation }: any) => {
           following: [],
           friends: [],
           blocked: [],
+          images: [],
           created_at: serverTimestamp()
         })
 
