@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
-import {doc, setDoc, serverTimestamp} from 'firebase/firestore';
+import React, { useState } from 'react'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 
-import {auth, db} from '../../services/firebase';
+import { auth, db } from '../../services/firebase'
 import {
   View,
   Text,
@@ -12,17 +12,20 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   SafeAreaView,
-} from 'react-native';
-import {Button, Icon} from '../../components';
+  Dimensions,
+  KeyboardAvoidingView,
+  ImageBackground
+} from 'react-native'
+import { Button, Icon } from '../../components'
 
-import {home_video, logo} from '../../assets';
-import Video from 'react-native-video';
-import FirstStep from './Register/FirstStep';
-import SecondStep from './Register/SecondStep';
-import ThirdStep from './Register/ThirdStep';
+import { cover_video, home_video, logo } from '../../assets'
+import Video from 'react-native-video'
+import FirstStep from './Register/FirstStep'
+import SecondStep from './Register/SecondStep'
+import ThirdStep from './Register/ThirdStep'
 
-const Register = ({navigation}: any) => {
-  const [step, setStep] = useState(1);
+const Register = ({ navigation }: any) => {
+  const [step, setStep] = useState(1)
   const [user, setUser] = useState({
     name: '',
     first_name: '',
@@ -32,16 +35,20 @@ const Register = ({navigation}: any) => {
     icon_url: '',
     email: '',
     password: '',
-    confirmPassword: '',
-  });
+    confirmPassword: ''
+  })
 
-  const [avatar, setAvatar] = useState('');
-  const [error, setError] = useState({email: false, password: false, text: ''});
+  const [avatar, setAvatar] = useState('')
+  const [error, setError] = useState({
+    email: false,
+    password: false,
+    text: ''
+  })
 
   const handleStep = () => {
     switch (step) {
       case 1:
-        return <FirstStep user={user} setUser={setUser} />;
+        return <FirstStep user={user} setUser={setUser} />
       case 2:
         return (
           <SecondStep
@@ -50,27 +57,27 @@ const Register = ({navigation}: any) => {
             user={user}
             setUser={setUser}
           />
-        );
+        )
       case 3:
-        return <ThirdStep user={user} setUser={setUser} error={error} />;
+        return <ThirdStep user={user} setUser={setUser} error={error} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const handleRegister = async () => {
-    setLoading(true);
-    const go = handleSubmitDisabled();
+    setLoading(true)
 
-    if (!go) {
-      return;
+    if (!handleSubmitDisabled()) {
+      setLoading(false)
+      return
     }
 
     createUserWithEmailAndPassword(auth, user.email, user.password)
       .then(async userCredential => {
-        const usersRef = doc(db, 'users', userCredential.user.uid);
+        const usersRef = doc(db, 'users', userCredential.user.uid)
 
         await setDoc(usersRef, {
           name: user.name,
@@ -80,31 +87,31 @@ const Register = ({navigation}: any) => {
           last_name: user.last_name,
           birth_date: user.birth_date,
           terms_accepted: user.terms_accepted,
-          created_at: serverTimestamp(),
-        });
+          created_at: serverTimestamp()
+        })
 
         await updateProfile(userCredential.user, {
           displayName: user.name,
-          photoURL: user.icon_url,
-        });
+          photoURL: user.icon_url
+        })
       })
       .catch(catchError => {
         if (catchError.code === 'auth/email-already-in-use') {
           setError({
             email: true,
             password: false,
-            text: '* Cet email est déjà utilisé',
-          });
+            text: '* Cet email est déjà utilisé'
+          })
         } else {
-          setError({email: true, password: false, text: catchError.message});
+          setError({ email: true, password: false, text: catchError.message })
         }
 
-        setLoading(false);
+        setLoading(false)
       })
       .finally(() => {
-        setLoading(false);
-      });
-  };
+        setLoading(false)
+      })
+  }
 
   const handleNextDisabled = () => {
     if (step === 1) {
@@ -113,54 +120,59 @@ const Register = ({navigation}: any) => {
         !(user.first_name.length >= 3) ||
         !(user.last_name.length >= 3) ||
         !user.birth_date
-      );
+      )
     } else if (step === 2) {
-      return !user.terms_accepted || (avatar && !user.icon_url);
+      return !user.terms_accepted || (avatar && !user.icon_url)
     } else {
-      return !user.email || !user.password || !user.confirmPassword;
+      return !user.email || !user.password || !user.confirmPassword
     }
-  };
+  }
 
   const handleSubmitDisabled = () => {
     if (user.password !== user.confirmPassword) {
       setError({
         email: false,
         password: true,
-        text: '* Les mots de passe ne correspondent pas',
-      });
-      return false;
+        text: '* Les mots de passe ne correspondent pas'
+      })
+      return false
     }
     if (user.password.length < 6) {
       setError({
         email: false,
         password: true,
-        text: '* Le mot de passe doit contenir au moins 6 caractères',
-      });
-      return false;
+        text: '* Le mot de passe doit contenir au moins 6 caractères'
+      })
+      return false
     }
     if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(user.email)) {
       setError({
         email: true,
         password: false,
-        text: "* L'email n'est pas valide",
-      });
-      return false;
+        text: "* L'email n'est pas valide"
+      })
+      return false
     }
-    setError({email: false, password: false, text: ''});
-    return true;
-  };
+    setError({ email: false, password: false, text: '' })
+    return true
+  }
 
   return (
-    <SafeAreaView style={StyleSheet.absoluteFill}>
-      <Video
-        source={home_video}
-        style={styles.video}
-        muted={true}
-        repeat={true}
-        resizeMode={'cover'}
-        rate={1.0}
-        ignoreSilentSwitch={'obey'}
-      />
+    <SafeAreaView
+      style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black' }}>
+      <ImageBackground
+        source={cover_video}
+        style={{ opacity: 0.2, backgroundColor: '#4778EE' }}>
+        <Video
+          source={home_video}
+          style={styles.video}
+          muted={true}
+          repeat={true}
+          resizeMode={'cover'}
+          rate={1.0}
+          ignoreSilentSwitch={'obey'}
+        />
+      </ImageBackground>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <View style={styles.headerContainer}>
@@ -186,92 +198,111 @@ const Register = ({navigation}: any) => {
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   ...styles.step,
-                  backgroundColor: step >= 1 ? '#4777EE' : '#EFEFEF',
+                  backgroundColor: step >= 1 ? '#4777EE' : '#EFEFEF'
                 }}
               />
               <View
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   ...styles.step,
-                  backgroundColor: step >= 2 ? '#4777EE' : '#EFEFEF',
+                  backgroundColor: step >= 2 ? '#4777EE' : '#EFEFEF'
                 }}
               />
               <View
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   ...styles.step,
-                  backgroundColor: step >= 3 ? '#4777EE' : '#EFEFEF',
+                  backgroundColor: step >= 3 ? '#4777EE' : '#EFEFEF'
                 }}
               />
             </View>
           </View>
-          <View style={styles.form}>{handleStep()}</View>
-          <View style={styles.inputs}>
-            {loading ? (
-              <ActivityIndicator size="large" />
-            ) : (
-              <View style={styles.buttons}>
-                {step !== 1 ? (
-                  <Button
-                    title="Retour"
-                    accessibilityLabel="Button pour revenir à la page précédente"
-                    color="#4777EE"
-                    outlined={true}
-                    width={100}
-                    backgroundColor="transparent"
-                    onPress={() => setStep(step - 1)}
-                  />
-                ) : (
-                  <View />
-                )}
-                {step === 3 ? (
-                  <Button
-                    title="S'inscrire"
-                    width={100}
-                    disabled={handleNextDisabled()}
-                    accessibilityLabel="Button pour s'inscrire"
-                    onPress={handleRegister}
-                  />
-                ) : (
-                  <Button
-                    title="Suivant"
-                    width={100}
-                    disabled={handleNextDisabled()}
-                    accessibilityLabel="Button pour passer à l'étape suivante"
-                    onPress={() => setStep(step + 1)}
-                  />
-                )}
-              </View>
-            )}
-          </View>
+          <KeyboardAvoidingView style={styles.form}>
+            {handleStep()}
+            <View style={styles.inputs}>
+              {loading ? (
+                <View style={{ ...styles.buttons, justifyContent: 'flex-end' }}>
+                  <ActivityIndicator size="large" />
+                </View>
+              ) : (
+                <View style={styles.buttons}>
+                  {step !== 1 ? (
+                    <Button
+                      title="Retour"
+                      accessibilityLabel="Button pour revenir à la page précédente"
+                      color="#4777EE"
+                      outlined={true}
+                      width={100}
+                      backgroundColor="transparent"
+                      onPress={() => setStep(step - 1)}
+                    />
+                  ) : (
+                    <View />
+                  )}
+                  {step === 3 ? (
+                    <Button
+                      title="S'inscrire"
+                      width={100}
+                      disabled={Boolean(handleNextDisabled())}
+                      accessibilityLabel="Button pour s'inscrire"
+                      onPress={handleRegister}
+                    />
+                  ) : (
+                    <Button
+                      title="Suivant"
+                      width={100}
+                      disabled={Boolean(handleNextDisabled())}
+                      accessibilityLabel="Button pour passer à l'étape suivante"
+                      onPress={() => setStep(step + 1)}
+                    />
+                  )}
+                </View>
+              )}
+            </View>
+          </KeyboardAvoidingView>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   flex1: {
-    flex: 1,
+    flex: 1
   },
-  video: {...StyleSheet.absoluteFillObject, opacity: 0.1},
+  video: {
+    position: 'absolute',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width
+  },
   form: {
-    flex: 2,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: 20
+  },
+  inputs: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: '100%',
+    gap: 20
   },
   headerContainer: {
     alignItems: 'center',
     gap: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 20
   },
   header: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   brand: {
     flex: 1,
@@ -279,61 +310,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 0,
+    gap: 0
   },
   title: {
     fontSize: 30,
     color: '#4777EE',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   stepper: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: 20
   },
   titleStep: {
     alignSelf: 'flex-start',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#4777EE',
+    color: '#4777EE'
   },
   step: {
     flex: 1,
     height: 4,
-    borderRadius: 5,
+    borderRadius: 5
   },
-  logo: {width: 70, height: 70},
+  logo: { width: 70, height: 70 },
   buttons: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: 30,
-  },
-  inputs: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: '100%',
-    gap: 20,
-  },
-  input: {
-    height: 45,
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-  },
-  ou: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#4777EE',
-  },
-  link: {
-    marginTop: 10,
-    fontSize: 16,
-  },
-});
+    height: 47
+  }
+})
 
-export default Register;
+export default Register

@@ -9,22 +9,22 @@ import {
   ActivityIndicator,
   ScrollView,
   Platform,
-  Alert,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Button} from '../../components';
-import FirstStep from './Create/FirstStep';
-import SecondStep from './Create/SecondStep';
-import ThirdStep from './Create/ThirdStep';
-import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
-import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
-import {auth, db, storage} from '../../services/firebase';
+  Alert
+} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Button } from '../../components'
+import FirstStep from './Create/FirstStep'
+import SecondStep from './Create/SecondStep'
+import ThirdStep from './Create/ThirdStep'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { auth, db, storage } from '../../services/firebase'
 
-const CreateBoat = ({navigation}: any) => {
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [step, setStep] = useState(1);
-  const [image, setImage] = useState({uri: ''});
+const CreateBoat = ({ navigation }: any) => {
+  const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [step, setStep] = useState(1)
+  const [image, setImage] = useState({ uri: '' })
   const [boat, setBoat] = useState({
     image_url: '',
     name: '',
@@ -42,8 +42,8 @@ const CreateBoat = ({navigation}: any) => {
     engine: '',
     fuel: '',
     water: 0,
-    year: 0,
-  });
+    year: 0
+  })
 
   const handleStep = () => {
     switch (step) {
@@ -55,15 +55,15 @@ const CreateBoat = ({navigation}: any) => {
             boat={boat}
             setBoat={setBoat}
           />
-        );
+        )
       case 2:
-        return <SecondStep boat={boat} setBoat={setBoat} />;
+        return <SecondStep boat={boat} setBoat={setBoat} />
       case 3:
-        return <ThirdStep boat={boat} setBoat={setBoat} />;
+        return <ThirdStep boat={boat} setBoat={setBoat} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const handleNextDisabled = () => {
     if (step === 1) {
@@ -72,13 +72,13 @@ const CreateBoat = ({navigation}: any) => {
         !(boat.boat_type.length >= 3) ||
         !(boat.number.length >= 3) ||
         !image
-      );
+      )
     } else if (step === 2) {
-      return !(boat.crew.length > 0) || !(boat.owners.length > 0);
+      return !(boat.crew.length > 0) || !(boat.owners.length > 0)
     } else {
-      return !boat.club || !boat.length || !boat.year || !boat.draft;
+      return !boat.club || !boat.length || !boat.year || !boat.draft
     }
-  };
+  }
 
   useEffect(() => {
     if (boat.image_url !== '') {
@@ -86,41 +86,41 @@ const CreateBoat = ({navigation}: any) => {
         ...boat,
         owners: [...boat.owners, auth?.currentUser?.uid],
         crew: [...boat.crew, auth?.currentUser?.uid],
-        created_at: serverTimestamp(),
+        created_at: serverTimestamp()
       }).then(() => {
-        setLoading(false);
-        navigation.navigate('/boats');
-      });
+        setLoading(false)
+        navigation.navigate('/boats')
+      })
     }
-  }, [boat, navigation]);
+  }, [boat, navigation])
 
   const handleCreate = async () => {
-    setLoading(true);
-    const storageRef = ref(storage, `boats/image/${boat.name}`);
-    const load = await fetch(image.uri);
-    const blob = await load.blob();
-    const uploadTask = uploadBytesResumable(storageRef, blob);
+    setLoading(true)
+    const storageRef = ref(storage, `boats/image/${boat.name}`)
+    const load = await fetch(image.uri)
+    const blob = await load.blob()
+    const uploadTask = uploadBytesResumable(storageRef, blob)
 
     uploadTask.on(
       'state_changed',
       snapshot => {
-        const ratio = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(ratio);
+        const ratio = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        setProgress(ratio)
       },
       error => {
         Alert.alert(
           error.code,
-          "Une erreur est survenue lors de l'envoi de votre image de profil",
-        );
-        setLoading(false);
+          "Une erreur est survenue lors de l'envoi de votre image de profil"
+        )
+        setLoading(false)
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-          setBoat({...boat, image_url: downloadURL});
-        });
-      },
-    );
-  };
+          setBoat({ ...boat, image_url: downloadURL })
+        })
+      }
+    )
+  }
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
@@ -139,21 +139,21 @@ const CreateBoat = ({navigation}: any) => {
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   ...styles.step,
-                  backgroundColor: step >= 1 ? '#4777EE' : '#EFEFEF',
+                  backgroundColor: step >= 1 ? '#4777EE' : '#EFEFEF'
                 }}
               />
               <View
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   ...styles.step,
-                  backgroundColor: step >= 2 ? '#4777EE' : '#EFEFEF',
+                  backgroundColor: step >= 2 ? '#4777EE' : '#EFEFEF'
                 }}
               />
               <View
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   ...styles.step,
-                  backgroundColor: step >= 3 ? '#4777EE' : '#EFEFEF',
+                  backgroundColor: step >= 3 ? '#4777EE' : '#EFEFEF'
                 }}
               />
             </View>
@@ -169,7 +169,6 @@ const CreateBoat = ({navigation}: any) => {
                 {loading ? (
                   <View>
                     <ActivityIndicator size="large" />
-                    <Text>{Math.round(progress)}%</Text>
                   </View>
                 ) : (
                   <View style={styles.buttons}>
@@ -211,14 +210,14 @@ const CreateBoat = ({navigation}: any) => {
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   stepsContainer: {
     display: 'flex',
@@ -227,33 +226,33 @@ const styles = StyleSheet.create({
     gap: 20,
     width: '100%',
     paddingVertical: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
   },
   form: {
-    flex: 1,
+    flex: 1
   },
   headerContainer: {
     alignItems: 'center',
     gap: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 20
   },
   stepper: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: 20
   },
   titleStep: {
     alignSelf: 'flex-start',
     fontSize: 20,
     marginTop: 20,
     fontWeight: 'bold',
-    color: '#4777EE',
+    color: '#4777EE'
   },
   step: {
     flex: 1,
     height: 4,
-    borderRadius: 5,
+    borderRadius: 5
   },
   buttonsContainer: {
     display: 'flex',
@@ -261,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20,
     width: '100%',
-    gap: 20,
+    gap: 20
   },
   buttons: {
     display: 'flex',
@@ -269,8 +268,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: 30,
-    marginBottom: 60,
-  },
-});
+    marginBottom: 60
+  }
+})
 
-export default CreateBoat;
+export default CreateBoat

@@ -9,14 +9,15 @@ import {
   Keyboard,
   SafeAreaView,
   TextInput,
-  Dimensions
+  Dimensions,
+  ImageBackground
 } from 'react-native'
 import React, { useState } from 'react'
 import { auth } from '../../services/firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { Button, Icon } from '../../components'
 import Video from 'react-native-video'
-import { home_video, logo } from '../../assets'
+import { cover_video, home_video, logo } from '../../assets'
 
 const Login = ({ navigation }: any) => {
   const [email, setEmail] = useState('')
@@ -36,16 +37,21 @@ const Login = ({ navigation }: any) => {
   }
 
   return (
-    <SafeAreaView style={StyleSheet.absoluteFill}>
-      <Video
-        source={home_video}
-        style={styles.video}
-        muted={true}
-        repeat={true}
-        resizeMode={'cover'}
-        rate={1.0}
-        ignoreSilentSwitch={'obey'}
-      />
+    <SafeAreaView
+      style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black' }}>
+      <ImageBackground
+        source={cover_video}
+        style={{ opacity: 0.2, backgroundColor: '#4778EE' }}>
+        <Video
+          source={home_video}
+          style={styles.video}
+          muted={true}
+          repeat={true}
+          resizeMode={'cover'}
+          rate={1.0}
+          ignoreSilentSwitch={'obey'}
+        />
+      </ImageBackground>
       <KeyboardAvoidingView>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.form}>
@@ -127,8 +133,7 @@ const styles = StyleSheet.create({
   video: {
     position: 'absolute',
     height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-    opacity: 0.2
+    width: Dimensions.get('window').width
   },
   form: {
     justifyContent: 'space-between',

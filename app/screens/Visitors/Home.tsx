@@ -1,10 +1,10 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image, SafeAreaView} from 'react-native';
-import {Button} from '../../components';
-import {logo_white, home_video} from '../../assets';
-import Video from 'react-native-video';
+import React from 'react'
+import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native'
+import { Button } from '../../components'
+import { logo_white, home_video } from '../../assets'
+import Video from 'react-native-video'
 
-const Home = ({navigation}: any) => {
+const Home = ({ navigation }: any) => {
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
       <Video
@@ -40,8 +40,8 @@ const Home = ({navigation}: any) => {
         </View>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -49,24 +49,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 30,
-    margin: 30,
+    margin: 30
   },
   brand: {
     display: 'flex',
     alignItems: 'center',
-    gap: 0,
+    gap: 0
   },
   buttons: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    gap: 20
   },
   title: {
     fontSize: 50,
     color: '#EFEFEF',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
-  logo: {width: 200, height: 200},
-});
+  logo: { width: 200, height: 200 }
+})
 
-export default Home;
+export default Home
