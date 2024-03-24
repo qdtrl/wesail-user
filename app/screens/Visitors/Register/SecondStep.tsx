@@ -17,6 +17,7 @@ import { Alert } from 'react-native'
 const SecondStep = ({ avatar, setAvatar, user, setUser }: any) => {
   const [progress, setProgress] = useState(0)
   const [loading, setLoading] = useState(false)
+
   const handleButtonPress = () => {
     launchImageLibrary(
       { mediaType: 'photo', includeBase64: false },

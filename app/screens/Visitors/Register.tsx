@@ -89,7 +89,7 @@ const Register = ({ navigation }: any) => {
           terms_accepted: user.terms_accepted,
           followers: [],
           following: [],
-          friends: [],
+          boats: [],
           blocked: [],
           images: [],
           created_at: serverTimestamp()

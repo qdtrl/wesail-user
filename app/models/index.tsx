@@ -17,11 +17,11 @@ export type UserProps = {
   first_name: string
   last_name: string
   icon_url: string
-  blocked: [string]
-  following: [string]
-  followers: [string]
-  friends: [string]
-  images: [string]
+  blocked: string[]
+  following: string[]
+  followers: string[]
+  boats: string[]
+  images: string[]
   description: string
   birth_date: number
 

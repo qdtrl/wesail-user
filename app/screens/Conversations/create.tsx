@@ -1,93 +1,91 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, SafeAreaView, ScrollView, StyleSheet} from 'react-native';
-import {Button, Input} from '../../components';
-import {UserProps, ConversationProps} from '../../models';
-import {addDoc, collection, getDocs, serverTimestamp} from 'firebase/firestore';
-import {db} from '../../services/firebase';
-import {ref, getDownloadURL, uploadBytesResumable} from 'firebase/storage';
-import SearchUsers from '../../components/SearchUsers';
-import {launchImageLibrary} from 'react-native-image-picker';
+import React, { useEffect, useState } from 'react'
+import { View, Text, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { Avatar, Button, Input } from '../../components'
+import { UserProps, ConversationProps } from '../../models'
+import {
+  addDoc,
+  collection,
+  getDocs,
+  serverTimestamp
+} from 'firebase/firestore'
+import { db, storage } from '../../services/firebase'
+import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage'
+import SearchUsers from '../../components/SearchUsers'
+import { launchImageLibrary } from 'react-native-image-picker'
 const CreateConversation = () => {
-  const [name, setName] = useState('');
-  const [icon, setIcon] = useState('');
-  const [searchUser, setSearchUser] = useState('');
-  const [searchAdmin, setSearchAdmin] = useState('');
-  const [users, setUsers] = useState<string[]>([]);
-  const [admins, setAdmins] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<UserProps[]>([]);
+  const [name, setName] = useState('')
+  const [icon, setIcon] = useState({ uri: '' })
+  const [searchUser, setSearchUser] = useState('')
+  const [searchAdmin, setSearchAdmin] = useState('')
+  const [users, setUsers] = useState<string[]>([])
+  const [admins, setAdmins] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [userData, setUserData] = useState<UserProps[]>([])
+  const [iconUrl, setIconUrl] = useState('')
 
   const handleButtonPress = () => {
-    const options = {
-      mediaType: 'photo',
-      includeBase64: false,
-    };
-
-    launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log("L'utilisateur a annulé la prise de photo");
-      } else if (response.error) {
-        console.log('Erreur imagePicker : ', response.error);
-      } else {
-        const source = {uri: response.uri};
-        console.log(source);
-        // Vous pouvez maintenant utiliser l'image source dans votre application
+    launchImageLibrary(
+      { mediaType: 'photo', includeBase64: false },
+      response => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker')
+        } else if (response.errorCode) {
+          console.log('ImagePicker Error: ', response.errorMessage)
+        } else {
+          if (response.assets) {
+            setIcon(response.assets[0])
+          }
+        }
       }
-    });
-  };
+    )
+  }
 
   const handleSubmit = () => {
-    setLoading(true);
-    uploadIcon();
-  };
+    setLoading(true)
+    uploadIcon()
+  }
 
   const uploadIcon = async () => {
-    const storageRef = ref(storage, `conversations/icons/${conversation.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, icon);
+    const storageRef = ref(storage, `conversations/icons/${name}`)
+    const image = await fetch(icon.uri)
+    const blob = await image.blob()
+    const uploadTask = uploadBytesResumable(storageRef, blob)
 
     uploadTask.on(
       'state_changed',
-      snapshot => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
-      },
+      snapshot => {},
       error => {
-        toast.error(error.message);
-        setLoading(false);
+        setLoading(false)
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-          setConversation(prev => {
-            return {
-              ...prev,
-              icon_url: downloadURL,
-            };
-          });
-        });
-      },
-    );
-  };
+          setIconUrl(downloadURL)
+          createConversation()
+        })
+      }
+    )
+  }
 
   const getUserData = async () => {
-    const usersRef = collection(db, 'users');
-    const usersSnapshot = await getDocs(usersRef);
-    const usersList = usersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name,
-      first_name: doc.data().first_name,
-      last_name: doc.data().last_name,
-      icon_url: doc.data().icon_url,
-      created_at: doc.data().created_at,
-    }));
+    const usersRef = collection(db, 'users')
+    const usersSnapshot = await getDocs(usersRef)
+    const usersList = usersSnapshot.docs.map(
+      doc =>
+        ({
+          id: doc.id,
+          ...doc.data()
+        } as UserProps)
+    )
 
-    setUserData(usersList);
-    setLoading(false);
-  };
+    setUserData(usersList)
+    setLoading(false)
+  }
+
+  const createConversation = async () => {}
 
   useEffect(() => {
-    getUserData();
-  }, []);
+    getUserData()
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -98,8 +96,21 @@ const CreateConversation = () => {
             value={name}
             setValue={setName}
           />
-
-          <Text onPress={handleButtonPress}>Choisir une icone</Text>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              alignItems: 'center'
+            }}>
+            <Avatar
+              icon={icon.uri}
+              size={50}
+              color="#4777EE"
+              border="transparent"
+            />
+            <Text onPress={handleButtonPress}>Choisir une icone</Text>
+          </View>
 
           <SearchUsers
             label="utilisateurs"
@@ -119,19 +130,19 @@ const CreateConversation = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   scrollView: {
     margin: 20,
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
-  },
-});
+    gap: 20
+  }
+})
 
-export default CreateConversation;
+export default CreateConversation

@@ -1,48 +1,47 @@
-import {View, StyleSheet, ActivityIndicator} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {SearchUsers} from '../../../components';
-import {UserProps} from '../../../models';
-import {collection, getDocs} from 'firebase/firestore';
-import {db} from '../../../services/firebase';
+import { View, StyleSheet, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { SearchUsers } from '../../../components'
+import { UserProps } from '../../../models'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../../../services/firebase'
 
-const SecondStep = ({boat, setBoat}: any) => {
-  const [userData, setUserData] = useState<UserProps[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [crew, setCrew] = useState<string[]>([]);
-  const [owners, setOwners] = useState<string[]>([]);
+const SecondStep = ({ boat, setBoat }: any) => {
+  const [userData, setUserData] = useState<UserProps[]>([])
+  const [loading, setLoading] = useState(true)
+  const [crew, setCrew] = useState<string[]>([])
+  const [owners, setOwners] = useState<string[]>([])
   const getUserData = async () => {
-    const usersRef = collection(db, 'users');
-    const usersSnapshot = await getDocs(usersRef);
-    const usersList = usersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name,
-      first_name: doc.data().first_name,
-      last_name: doc.data().last_name,
-      icon_url: doc.data().icon_url,
-      created_at: doc.data().created_at,
-    }));
+    const usersRef = collection(db, 'users')
+    const usersSnapshot = await getDocs(usersRef)
+    const usersList = usersSnapshot.docs.map(
+      doc =>
+        ({
+          id: doc.id,
+          ...doc.data()
+        } as UserProps)
+    )
 
-    setUserData(usersList);
-    setLoading(false);
-  };
+    setUserData(usersList)
+    setLoading(false)
+  }
 
   useEffect(() => {
-    getUserData();
-  }, []);
+    getUserData()
+  }, [])
 
   useEffect(() => {
     if (!crew.length && !owners.length) {
-      return;
+      return
     }
     if (crew === boat.crew && owners === boat.owners) {
-      return;
+      return
     }
 
-    const newCrew = [...new Set([...crew, ...owners])];
-    setBoat({...boat, crew: newCrew, owners});
-    setCrew(newCrew);
+    const newCrew = [...new Set([...crew, ...owners])]
+    setBoat({ ...boat, crew: newCrew, owners })
+    setCrew(newCrew)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [crew, owners]);
+  }, [crew, owners])
 
   return (
     <>
@@ -64,8 +63,8 @@ const SecondStep = ({boat, setBoat}: any) => {
         </View>
       )}
     </>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   inputs: {
@@ -74,8 +73,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     width: '100%',
-    gap: 20,
-  },
-});
+    gap: 20
+  }
+})
 
-export default SecondStep;
+export default SecondStep

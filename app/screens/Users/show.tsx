@@ -1,13 +1,23 @@
-import { doc, getDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { auth, db } from '../../services/firebase'
 import { UserProps } from '../../models'
-import { Avatar, Icon } from '../../components'
+import { Avatar, Button, Icon } from '../../components'
 
 const Profile = ({ navigation, route }: any) => {
   const [user, setUser] = useState<UserProps>()
+  const [index, setIndex] = useState(0)
 
   const getUser = async (id: string) => {
     const userRef = doc(db, 'users', id)
@@ -20,6 +30,7 @@ const Profile = ({ navigation, route }: any) => {
       } as UserProps)
     }
   }
+
   useEffect(() => {
     if (route.params?.user) {
       getUser(route.params.user)
@@ -30,8 +41,80 @@ const Profile = ({ navigation, route }: any) => {
     }
   }, [route.params?.user])
 
+  const showTabs = () => {
+    switch (index) {
+      case 0:
+        return <Text>Calendar</Text>
+      case 1:
+        return <Text>Photos</Text>
+      case 2:
+        return <Text>Equipages</Text>
+    }
+  }
+
+  const handleCreateConversation = () => {
+    addDoc(collection(db, 'conversations'), {
+      name: user?.name,
+      icon_url: user?.icon_url,
+      users: [auth.currentUser?.uid, user?.id],
+      admins: [auth.currentUser?.uid, user?.id],
+      created_at: serverTimestamp()
+    }).then(res => {
+      navigation.navigate('/conversations/show', {
+        conversation: {
+          id: res.id,
+          name: user?.name,
+          icon_url: user?.icon_url,
+          users: [auth.currentUser?.uid, user?.id],
+          admins: [auth.currentUser?.uid, user?.id],
+          created_at: serverTimestamp()
+        }
+      })
+    })
+  }
+
+  const handleCreateFollow = () => {
+    if (!user) return
+    const id_user = auth.currentUser?.uid
+    if (id_user === undefined) return
+
+    const userRef = doc(db, 'users', user.id)
+    updateDoc(userRef, {
+      followers: arrayUnion(auth.currentUser?.uid)
+    }).then(() => {
+      setUser({
+        ...user,
+        followers: [...user.followers, id_user]
+      })
+    })
+
+    const currentUserRef = doc(db, 'users', id_user)
+    updateDoc(currentUserRef, {
+      followings: arrayUnion(user?.id)
+    })
+  }
+
+  const handleUnfollow = () => {
+    if (!user) return
+    const userRef = doc(db, 'users', user.id)
+    updateDoc(userRef, {
+      followers: arrayRemove(auth.currentUser?.uid)
+    }).then(() => {
+      setUser({
+        ...user,
+        followers: user.followers.filter(id => id !== auth.currentUser?.uid)
+      })
+    })
+
+    if (!auth.currentUser) return
+    const currentUserRef = doc(db, 'users', auth.currentUser.uid)
+    updateDoc(currentUserRef, {
+      followings: arrayRemove(user?.id)
+    })
+  }
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ padding: 10 }}>
       {user && (
         <ScrollView>
           <View
@@ -39,7 +122,6 @@ const Profile = ({ navigation, route }: any) => {
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-between',
-              marginHorizontal: 10,
               alignItems: 'center'
             }}>
             <View
@@ -66,7 +148,7 @@ const Profile = ({ navigation, route }: any) => {
                 onTouchEnd={() =>
                   navigation.navigate('/profile/settings', { user })
                 }>
-                <Icon name="cog" size={40} color="black" />
+                <Icon name="cog" size={30} color="black" />
               </View>
             ) : (
               <View>
@@ -79,20 +161,17 @@ const Profile = ({ navigation, route }: any) => {
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-between',
-              margin: 20,
+              margin: 10,
               alignItems: 'center'
             }}>
-            <View>
-              <Avatar
-                icon={user.icon_url}
-                size={80}
-                color="black"
-                border="transparent"
-              />
-              <Text>{user.first_name + ' ' + user.last_name}</Text>
-            </View>
+            <Avatar
+              icon={user.icon_url}
+              size={80}
+              color="black"
+              border="transparent"
+            />
             <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text>{user.following.length}</Text>
+              <Text>{user.boats.length}</Text>
               <Text>équipages</Text>
             </View>
             <View style={{ display: 'flex', alignItems: 'center' }}>
@@ -104,11 +183,144 @@ const Profile = ({ navigation, route }: any) => {
               <Text>suivi(e)s</Text>
             </View>
           </View>
+          <Text>{user.first_name + ' ' + user.last_name}</Text>
+
           <Text>{user.description}</Text>
+
+          {user.id === auth.currentUser?.uid ? (
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                marginVertical: 20
+              }}>
+              <Button
+                title="Journal"
+                color="black"
+                outlined
+                width={120}
+                backgroundColor="transparent"
+                onPress={() =>
+                  navigation.navigate('/profile/settings', { user })
+                }
+              />
+              <Button
+                title="Modifier"
+                color="black"
+                outlined
+                width={120}
+                backgroundColor="transparent"
+                onPress={() =>
+                  navigation.navigate('/profile/settings', { user })
+                }
+              />
+            </View>
+          ) : (
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                marginVertical: 20
+              }}>
+              <Button
+                title="Message"
+                color="black"
+                outlined
+                width={120}
+                backgroundColor="transparent"
+                onPress={() => handleCreateConversation()}
+              />
+              {auth.currentUser &&
+              user.followers.includes(auth.currentUser?.uid) ? (
+                <Button
+                  title="Ne plus suivre"
+                  color="black"
+                  outlined
+                  width={120}
+                  backgroundColor="transparent"
+                  onPress={() => handleUnfollow()}
+                />
+              ) : (
+                <Button
+                  title="Suivre"
+                  color="black"
+                  outlined
+                  width={120}
+                  backgroundColor="transparent"
+                  onPress={() => handleCreateFollow()}
+                />
+              )}
+            </View>
+          )}
+          <View style={styles.iconsBar}>
+            <View
+              onTouchEnd={() => setIndex(0)}
+              // eslint-disable-next-line react-native/no-inline-styles
+              style={{
+                ...styles.iconBar,
+                borderColor: index === 0 ? 'red' : 'black'
+              }}>
+              <Icon
+                name="calendar-blank-outline"
+                size={24}
+                color={index === 0 ? 'red' : 'black'}
+              />
+            </View>
+            <View
+              onTouchEnd={() => setIndex(1)}
+              // eslint-disable-next-line react-native/no-inline-styles
+              style={{
+                ...styles.iconBar,
+                borderColor: index === 1 ? 'red' : 'black'
+              }}>
+              <Icon
+                name="camera-outline"
+                size={24}
+                color={index === 1 ? 'red' : 'black'}
+              />
+            </View>
+            <View
+              onTouchEnd={() => setIndex(2)}
+              // eslint-disable-next-line react-native/no-inline-styles
+              style={{
+                ...styles.iconBar,
+                borderColor: index === 2 ? 'red' : 'black'
+              }}>
+              <Icon
+                name="sail-boat"
+                size={24}
+                color={index === 2 ? 'red' : 'black'}
+              />
+            </View>
+          </View>
+          {showTabs()}
         </ScrollView>
       )}
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  iconsBar: { flexDirection: 'row', gap: 10 },
+  iconBar: {
+    flex: 1,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    paddingVertical: 2
+  },
+  cardUser: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 2,
+    gap: 2
+  },
+  name: { fontWeight: 'bold' }
+})
 
 export default Profile
