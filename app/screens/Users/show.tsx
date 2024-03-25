@@ -179,7 +179,7 @@ const Profile = ({ navigation, route }: any) => {
               <Text>followers</Text>
             </View>
             <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text>{user.following.length}</Text>
+              <Text>{user.followings.length}</Text>
               <Text>suivi(e)s</Text>
             </View>
           </View>

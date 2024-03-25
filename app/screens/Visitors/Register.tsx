@@ -88,7 +88,7 @@ const Register = ({ navigation }: any) => {
           birth_date: user.birth_date,
           terms_accepted: user.terms_accepted,
           followers: [],
-          following: [],
+          followings: [],
           boats: [],
           blocked: [],
           images: [],
