@@ -14,7 +14,7 @@ import SearchUsers from '../../components/SearchUsers'
 import { launchImageLibrary } from 'react-native-image-picker'
 const CreateConversation = () => {
   const [name, setName] = useState('')
-  const [icon, setIcon] = useState({ uri: '' })
+  const [icon, setIcon] = useState({} as any)
   const [searchUser, setSearchUser] = useState('')
   const [searchAdmin, setSearchAdmin] = useState('')
   const [users, setUsers] = useState<string[]>([])
