@@ -1,27 +1,30 @@
-import {View, Text, TextInput, StyleSheet, Image, Button} from 'react-native';
-import React from 'react';
-import {Icon} from '../../../components';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { View, Text, TextInput, StyleSheet, Image, Button } from 'react-native'
+import React from 'react'
+import { Icon } from '../../../components'
+import { launchImageLibrary } from 'react-native-image-picker'
 
-const FirstStep = ({boat, setBoat, image, setImage}: any) => {
+const FirstStep = ({ boat, setBoat, image, setImage }: any) => {
   const handleButtonPress = () => {
-    launchImageLibrary({mediaType: 'photo', includeBase64: false}, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        if (response.assets) {
-          setImage(response.assets[0]);
+    launchImageLibrary(
+      { mediaType: 'photo', includeBase64: false },
+      response => {
+        if (response.didCancel) {
+          console.log('User cancelled image picke')
+        } else if (response.errorCode) {
+          console.log('ImagePicker Error: ', response.errorMessage)
+        } else {
+          if (response.assets) {
+            setImage(response.assets[0])
+          }
         }
       }
-    });
-  };
+    )
+  }
 
   return (
     <View style={styles.inputs}>
       <View>
-        <Image source={{uri: image?.uri}} style={styles.image} />
+        <Image source={{ uri: image.uri }} style={styles.image} />
         <Button
           title="Ajouter une image pour votre bateau"
           onPress={handleButtonPress}
@@ -34,7 +37,7 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
           <Icon name="account-edit" size={20} color="#4777EE" />
           <TextInput
             value={boat.name}
-            onChangeText={text => setBoat({...boat, name: text})}
+            onChangeText={text => setBoat({ ...boat, name: text })}
             placeholder="La Mouette"
             autoCapitalize="words"
             style={styles.input}
@@ -48,7 +51,7 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
           <Icon name="account-edit" size={20} color="#4777EE" />
           <TextInput
             value={boat.number}
-            onChangeText={text => setBoat({...boat, number: text})}
+            onChangeText={text => setBoat({ ...boat, number: text })}
             placeholder="1234"
             autoCapitalize="words"
             keyboardType="numeric"
@@ -63,7 +66,7 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
           <Icon name="account-edit" size={20} color="#4777EE" />
           <TextInput
             value={boat.boat_type}
-            onChangeText={text => setBoat({...boat, boat_type: text})}
+            onChangeText={text => setBoat({ ...boat, boat_type: text })}
             placeholder="Classique"
             autoCapitalize="words"
             style={styles.input}
@@ -72,36 +75,35 @@ const FirstStep = ({boat, setBoat, image, setImage}: any) => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   inputs: {
-    flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
     width: '100%',
-    gap: 20,
+    gap: 30
   },
   label: {
     color: '#4777EE',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   inputGroup: {
     display: 'flex',
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
-    padding: 15,
+    paddingHorizontal: 15,
     borderLeftWidth: 1,
     borderColor: '#4777EE',
     width: '100%',
+    height: 50
   },
   input: {
     color: '#4777EE',
-    width: 250,
+    width: 250
   },
   image: {
     width: 200,
@@ -109,7 +111,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center',
     backgroundColor: 'lightgray',
-  },
-});
+    marginBottom: 20
+  }
+})
 
-export default FirstStep;
+export default FirstStep
