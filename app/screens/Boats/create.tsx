@@ -16,7 +16,14 @@ import { Button } from '../../components'
 import FirstStep from './Create/FirstStep'
 import SecondStep from './Create/SecondStep'
 import ThirdStep from './Create/ThirdStep'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { auth, db, storage } from '../../services/firebase'
 
@@ -81,17 +88,30 @@ const CreateBoat = ({ navigation }: any) => {
   }
 
   useEffect(() => {
-    if (boat.image_url !== '') {
-      addDoc(collection(db, 'boats'), {
-        ...boat,
-        owners: [...boat.owners, auth?.currentUser?.uid],
-        crew: [...boat.crew, auth?.currentUser?.uid],
-        created_at: serverTimestamp()
-      }).then(() => {
+    const crew = [...boat.crew, auth?.currentUser?.uid]
+    const owners = [...boat.owners, auth?.currentUser?.uid]
+
+    addDoc(collection(db, 'boats'), {
+      ...boat,
+      owners: crew,
+      crew: owners,
+      created_at: serverTimestamp()
+    })
+      .then(res => {
+        console.log(res)
+        if (crew && crew.length > 0) {
+          crew.forEach((user: string) => {
+            const userRef = doc(db, 'users', user)
+            updateDoc(userRef, {
+              boats: arrayUnion(res.id)
+            })
+          })
+        }
+      })
+      .finally(() => {
         setLoading(false)
         navigation.navigate('/boats')
       })
-    }
   }, [boat, navigation])
 
   const handleCreate = async () => {
@@ -162,8 +182,8 @@ const CreateBoat = ({ navigation }: any) => {
             style={styles.stepsContainer}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={150}>
-            <ScrollView>
-              <View style={styles.form}>{handleStep()}</View>
+            <ScrollView style={styles.form}>
+              {handleStep()}
 
               <View style={styles.buttonsContainer}>
                 {loading ? (
@@ -215,21 +235,19 @@ const CreateBoat = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: '100%',
     width: '100%',
     alignItems: 'center'
   },
   stepsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    gap: 20,
+    flex: 1,
     width: '100%',
-    paddingVertical: 20,
+    height: '100%',
+    marginVertical: 20,
     paddingHorizontal: 20
   },
   form: {
-    flex: 1
+    minHeight: '100%'
   },
   headerContainer: {
     alignItems: 'center',
@@ -259,16 +277,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     marginVertical: 20,
-    width: '100%',
-    gap: 20
+    width: '100%'
   },
   buttons: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 30,
-    marginBottom: 60
+    justifyContent: 'space-between'
   }
 })
 

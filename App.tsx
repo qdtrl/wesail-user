@@ -1,90 +1,90 @@
-import React, {Suspense, useEffect, useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {User, onAuthStateChanged} from 'firebase/auth';
-import {auth, rtdb} from './app/services/firebase';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ActivityIndicator} from 'react-native';
-import {Home, Login, Register, ForgotPassword} from './app/screens';
+import React, { Suspense, useEffect, useState } from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { User, onAuthStateChanged } from 'firebase/auth'
+import { auth, rtdb } from './app/services/firebase'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { ActivityIndicator } from 'react-native'
+import { Home, Login, Register, ForgotPassword } from './app/screens'
 import {
   BoatsRouter,
   ConversationsRouter,
   FeedRouter,
-  ProfileRouter,
-} from './app/routing';
+  ProfileRouter
+} from './app/routing'
 
-import {Avatar, Icon} from './app/components';
-import {onValue, ref} from 'firebase/database';
+import { Avatar, Icon } from './app/components'
+import { onValue, ref } from 'firebase/database'
 
-const VisitorsStack = createNativeStackNavigator();
+const VisitorsStack = createNativeStackNavigator()
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator()
 
 type IconProfileProps = {
-  color: string;
-  size: number;
-  url: string | null;
-};
+  color: string
+  size: number
+  url: string | null
+}
 
 type TabIconProps = {
-  name: string;
-  color: string;
-  size: number;
-};
+  name: string
+  color: string
+  size: number
+}
 
-const TabIcon = ({name, color, size}: TabIconProps) => (
+const TabIcon = ({ name, color, size }: TabIconProps) => (
   <Icon name={name} color={color} size={size} />
-);
+)
 
-const IconProfile = ({color, size, url}: IconProfileProps) => {
+const IconProfile = ({ color, size, url }: IconProfileProps) => {
   if (url) {
-    return <Avatar icon={url} size={size} color={color} border={color} />;
+    return <Avatar icon={url} size={size} color={color} border={color} />
   } else {
-    return TabIcon({name: 'account', color, size});
+    return TabIcon({ name: 'account', color, size })
   }
-};
+}
 
 export default function App(): React.JSX.Element {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [notifications, setNotifications] = useState({
     boats: 0,
     conversations: 0,
-    profile: 0,
-  });
+    profile: 0
+  })
 
-  const size = 30;
+  const size = 30
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, res => {
-      setUser(res);
+      setUser(res)
 
-      setLoading(false);
-    });
+      setLoading(false)
+    })
 
-    return unsubscribe;
-  }, []);
+    return unsubscribe
+  }, [])
 
   useEffect(() => {
     if (user) {
-      const notificationsRef = ref(rtdb, `notifications/${user.uid}`);
+      const notificationsRef = ref(rtdb, `notifications/${user.uid}`)
 
       onValue(notificationsRef, snapshot => {
-        const data = snapshot.val();
+        const data = snapshot.val()
         if (data) {
           setNotifications({
             boats: data.boats ? Object.values(data.boats).length : 0,
             conversations: data.conversations
               ? Object.values(data.conversations).length
               : 0,
-            profile: data.profile ? Object.values(data.profile).length : 0,
-          });
+            profile: data.profile ? Object.values(data.profile).length : 0
+          })
         } else {
-          setNotifications({boats: 0, conversations: 0, profile: 0});
+          setNotifications({ boats: 0, conversations: 0, profile: 0 })
         }
-      });
+      })
     }
-  }, [user]);
+  }, [user])
 
   return (
     <NavigationContainer>
@@ -95,7 +95,7 @@ export default function App(): React.JSX.Element {
           initialRouteName="/feed-router"
           screenOptions={{
             tabBarActiveTintColor: '#e91e63',
-            tabBarInactiveTintColor: 'gray',
+            tabBarInactiveTintColor: 'gray'
           }}>
           <Tab.Screen
             name="/feed-router"
@@ -103,7 +103,7 @@ export default function App(): React.JSX.Element {
             options={{
               tabBarShowLabel: false,
               headerShown: false,
-              tabBarIcon: ({color}) => TabIcon({name: 'home', color, size}),
+              tabBarIcon: ({ color }) => TabIcon({ name: 'home', color, size })
             }}
           />
           <Tab.Screen
@@ -114,8 +114,8 @@ export default function App(): React.JSX.Element {
               headerShown: false,
               tabBarBadge:
                 notifications.boats !== 0 ? notifications.boats : undefined,
-              tabBarIcon: ({color}) =>
-                TabIcon({name: 'sail-boat', color, size}),
+              tabBarIcon: ({ color }) =>
+                TabIcon({ name: 'sail-boat', color, size })
             }}
           />
           <Tab.Screen
@@ -128,7 +128,7 @@ export default function App(): React.JSX.Element {
                 notifications.conversations !== 0
                   ? notifications.conversations
                   : undefined,
-              tabBarIcon: ({color}) => TabIcon({name: 'chat', color, size}),
+              tabBarIcon: ({ color }) => TabIcon({ name: 'chat', color, size })
             }}
           />
           <Tab.Screen
@@ -139,8 +139,8 @@ export default function App(): React.JSX.Element {
               headerShown: false,
               tabBarBadge:
                 notifications.profile !== 0 ? notifications.profile : undefined,
-              tabBarIcon: ({color}) =>
-                IconProfile({color, size, url: user.photoURL}),
+              tabBarIcon: ({ color }) =>
+                IconProfile({ color, size, url: user.photoURL })
             }}
           />
         </Tab.Navigator>
@@ -149,25 +149,25 @@ export default function App(): React.JSX.Element {
           <VisitorsStack.Screen
             name="/home"
             component={Home}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <VisitorsStack.Screen
             name="/login"
             component={Login}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <VisitorsStack.Screen
             name="/register"
             component={Register}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <VisitorsStack.Screen
             name="/forgot-password"
             component={ForgotPassword}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
         </VisitorsStack.Navigator>
       )}
     </NavigationContainer>
-  );
+  )
 }
