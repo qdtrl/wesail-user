@@ -10,6 +10,7 @@ import {
   BoatsRouter,
   ConversationsRouter,
   FeedRouter,
+  NewRouter,
   ProfileRouter
 } from './app/routing'
 
@@ -104,6 +105,16 @@ export default function App(): React.JSX.Element {
               tabBarShowLabel: false,
               headerShown: false,
               tabBarIcon: ({ color }) => TabIcon({ name: 'home', color, size })
+            }}
+          />
+          <Tab.Screen
+            name="/add-router"
+            component={NewRouter}
+            options={{
+              tabBarShowLabel: false,
+              headerShown: false,
+              tabBarIcon: ({ color }) =>
+                TabIcon({ name: 'add', color, size })
             }}
           />
           <Tab.Screen

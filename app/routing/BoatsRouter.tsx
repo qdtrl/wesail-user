@@ -1,6 +1,6 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Boats, Boat, CreateBoat, UpdateBoat} from '../screens';
+import {Boats, Boat, CreateBoat, UpdateBoat, JoinWaitingList, Logbook} from '../screens';
 import {View} from 'react-native';
 import {Icon} from '../components';
 import {BoatProps} from '../models';
@@ -34,6 +34,11 @@ const BoatsRouter = () => {
         })}
       />
       <BoatsStack.Screen
+        name="/boats/logbook"
+        component={Logbook}
+        options={{title: 'Journal de bord'}}
+      />
+      <BoatsStack.Screen
         name="/boats/create"
         component={CreateBoat}
         options={{title: 'Nouveau bateau'}}
@@ -41,6 +46,11 @@ const BoatsRouter = () => {
       <BoatsStack.Screen
         name="/boats/update"
         component={UpdateBoat}
+        options={{title: ''}}
+      />
+      <BoatsStack.Screen
+        name="/boats/update/join-waiting-list"
+        component={JoinWaitingList}
         options={{title: ''}}
       />
     </BoatsStack.Navigator>
