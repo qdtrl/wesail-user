@@ -108,16 +108,6 @@ export default function App(): React.JSX.Element {
             }}
           />
           <Tab.Screen
-            name="/add-router"
-            component={NewRouter}
-            options={{
-              tabBarShowLabel: false,
-              headerShown: false,
-              tabBarIcon: ({ color }) =>
-                TabIcon({ name: 'add', color, size })
-            }}
-          />
-          <Tab.Screen
             name="/boats-router"
             component={BoatsRouter}
             options={{
@@ -127,6 +117,16 @@ export default function App(): React.JSX.Element {
                 notifications.boats !== 0 ? notifications.boats : undefined,
               tabBarIcon: ({ color }) =>
                 TabIcon({ name: 'sail-boat', color, size })
+            }}
+          />
+          <Tab.Screen
+            name="/add-router"
+            component={NewRouter}
+            options={{
+              tabBarShowLabel: false,
+              headerShown: false,
+              tabBarIcon: ({ color }) =>
+                TabIcon({ name: 'plus-circle', color, size })
             }}
           />
           <Tab.Screen

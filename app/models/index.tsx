@@ -48,6 +48,7 @@ export type BoatProps = {
   club: string
   sponsors: string[]
   images: string[]
+  waiting_list: string[]
   length: number
   width: number
   draft: number

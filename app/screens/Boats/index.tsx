@@ -22,28 +22,13 @@ const Boats = ({ navigation }: any) => {
   const getBoats = async () => {
     const boatsRef = collection(db, 'boats')
     onSnapshot(boatsRef, snapshot => {
-      const boatsList = snapshot.docs.map(res => ({
-        id: res.id,
-        image_url: res.data().image_url,
-        name: res.data().name,
-        boat_type: res.data().boat_type,
-        number: res.data().number,
-        owners: res.data().owners,
-        crew: res.data().crew,
-        club: res.data().club,
-        created_at: res.data().created_at,
-        images: res.data().images,
-        sponsors: res.data().sponsors,
-        length: res.data().length,
-        width: res.data().width,
-        draft: res.data().draft,
-        weight: res.data().weight,
-        sail_area: res.data().sail_area,
-        engine: res.data().engine,
-        fuel: res.data().fuel,
-        water: res.data().water,
-        year: res.data().year
-      }))
+      const boatsList = snapshot.docs.map(
+        res =>
+          ({
+            id: res.id,
+            ...res.data()
+          } as BoatProps)
+      )
 
       setBoats(boatsList)
       setLoading(false)
