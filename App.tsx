@@ -95,7 +95,7 @@ export default function App(): React.JSX.Element {
         <Tab.Navigator
           initialRouteName="/feed-router"
           screenOptions={{
-            tabBarActiveTintColor: '#e91e63',
+            tabBarActiveTintColor: '#4777EE',
             tabBarInactiveTintColor: 'gray'
           }}>
           <Tab.Screen

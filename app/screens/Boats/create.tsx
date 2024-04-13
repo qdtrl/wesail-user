@@ -16,14 +16,7 @@ import { Button } from '../../components'
 import FirstStep from './Create/FirstStep'
 import SecondStep from './Create/SecondStep'
 import ThirdStep from './Create/ThirdStep'
-import {
-  addDoc,
-  arrayUnion,
-  collection,
-  doc,
-  serverTimestamp,
-  updateDoc
-} from 'firebase/firestore'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { auth, db, storage } from '../../services/firebase'
 
@@ -98,15 +91,14 @@ const CreateBoat = ({ navigation }: any) => {
       created_at: serverTimestamp()
     })
       .then(res => {
-        console.log(res)
-        if (crew && crew.length > 0) {
-          crew.forEach((user: string) => {
-            const userRef = doc(db, 'users', user)
-            updateDoc(userRef, {
-              boats: arrayUnion(res.id)
-            })
-          })
-        }
+        addDoc(collection(db, 'conversations'), {
+          name: boat.name,
+          boat_id: res.id,
+          icon_url: boat.image_url,
+          users: crew,
+          admins: owners,
+          created_at: serverTimestamp()
+        })
       })
       .finally(() => {
         setLoading(false)

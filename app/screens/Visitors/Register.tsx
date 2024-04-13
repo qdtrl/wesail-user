@@ -187,7 +187,7 @@ const Register = ({ navigation }: any) => {
               </View>
               <View style={styles.brand}>
                 <Image source={logo} style={styles.logo} />
-                <Text style={styles.title}>WeSail</Text>
+                <Text style={styles.title}>OuiSail</Text>
               </View>
               <View style={styles.flex1} />
             </View>

@@ -57,7 +57,7 @@ const Login = ({ navigation }: any) => {
           <View style={styles.form}>
             <View style={styles.brand}>
               <Image source={logo} style={styles.logo} />
-              <Text style={styles.title}>WeSail</Text>
+              <Text style={styles.title}>OuiSail</Text>
             </View>
             <View style={styles.inputs}>
               <View style={styles.inputGroup}>

@@ -19,7 +19,7 @@ const Home = ({ navigation }: any) => {
       <View style={styles.container}>
         <View style={styles.brand}>
           <Image source={logo_white} style={styles.logo} />
-          <Text style={styles.title}>WeSail</Text>
+          <Text style={styles.title}>OuiSail</Text>
         </View>
         <View style={styles.buttons}>
           <Button

@@ -5,18 +5,22 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
+  query,
   serverTimestamp,
-  updateDoc
+  updateDoc,
+  where
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { auth, db } from '../../services/firebase'
-import { UserProps } from '../../models'
+import { UserProps, BoatProps } from '../../models'
 import { Avatar, Button, Icon } from '../../components'
 
 const Profile = ({ navigation, route }: any) => {
   const [user, setUser] = useState<UserProps>()
+  const [userBoats, setUserBoats] = useState<BoatProps[]>([])
   const [index, setIndex] = useState(0)
 
   const getUser = async (id: string) => {
@@ -31,12 +35,29 @@ const Profile = ({ navigation, route }: any) => {
     }
   }
 
+  const getUserBoats = async (id: string) => {
+    const boatsRef = collection(db, 'boats')
+    const q = query(boatsRef, where('crew', 'array-contains', id))
+    const querySnapshot = await getDocs(q)
+    const boats = querySnapshot.docs.map(
+      doc =>
+        ({
+          id: doc.id,
+          ...doc.data()
+        } as BoatProps)
+    )
+    setUserBoats(boats)
+    console.log(boats)
+  }
+
   useEffect(() => {
     if (route.params?.user) {
       getUser(route.params.user)
+      getUserBoats(route.params.user)
     } else {
       if (auth.currentUser) {
         getUser(auth.currentUser.uid)
+        getUserBoats(auth.currentUser.uid)
       }
     }
   }, [route.params?.user])
@@ -46,9 +67,46 @@ const Profile = ({ navigation, route }: any) => {
       case 0:
         return <Text>Calendar</Text>
       case 1:
-        return <Text>Photos</Text>
+        return (
+          <View
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: 10
+            }}>
+            {user?.images?.map((img, i) => (
+              <Image
+                key={i}
+                source={{ uri: img }}
+                style={{ width: '32.2%', aspectRatio: 1, margin: 2 }}
+              />
+            ))}
+          </View>
+        )
       case 2:
-        return <Text>Equipages</Text>
+        return (
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              margin: 10,
+              gap: 4
+            }}>
+            {userBoats.map((boat, i) => (
+              <View key={i} style={{ flex: 1 / 2, aspectRatio: 1 }}>
+                <Image
+                  source={{ uri: boat.image_url }}
+                  style={{ flex: 1, aspectRatio: 1, borderRadius: 10 }}
+                />
+                <Text>{boat.name}</Text>
+              </View>
+            ))}
+          </View>
+        )
     }
   }
 
@@ -114,7 +172,7 @@ const Profile = ({ navigation, route }: any) => {
   }
 
   return (
-    <SafeAreaView style={{ padding: 10 }}>
+    <SafeAreaView>
       {user && (
         <ScrollView>
           <View
@@ -122,7 +180,8 @@ const Profile = ({ navigation, route }: any) => {
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-between',
-              alignItems: 'center'
+              alignItems: 'center',
+              padding: 10
             }}>
             <View
               style={{
@@ -171,7 +230,7 @@ const Profile = ({ navigation, route }: any) => {
               border="transparent"
             />
             <View style={{ display: 'flex', alignItems: 'center' }}>
-              <Text>{user.boats.length}</Text>
+              <Text>{userBoats.length}</Text>
               <Text>équipages</Text>
             </View>
             <View style={{ display: 'flex', alignItems: 'center' }}>
@@ -183,40 +242,30 @@ const Profile = ({ navigation, route }: any) => {
               <Text>suivi(e)s</Text>
             </View>
           </View>
-          <Text>{user.first_name + ' ' + user.last_name}</Text>
+          <Text style={{ marginHorizontal: 10 }}>
+            {user.first_name + ' ' + user.last_name}
+          </Text>
 
-          <Text>{user.description}</Text>
+          <Text style={{ marginHorizontal: 10 }}>{user.description}</Text>
 
-          {user.id === auth.currentUser?.uid ? (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                marginVertical: 20
-              }}>
-              <Button
-                title="Journal"
-                color="black"
-                outlined
-                width={120}
-                backgroundColor="transparent"
-                onPress={() =>
-                  navigation.navigate('/profile/settings', { user })
-                }
-              />
-              <Button
-                title="Modifier"
-                color="black"
-                outlined
-                width={120}
-                backgroundColor="transparent"
-                onPress={() =>
-                  navigation.navigate('/profile/settings', { user })
-                }
-              />
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginVertical: 20
+            }}>
+            <View style={{ display: 'flex', alignItems: 'center' }}>
+              <Icon name="resistor" size={30} color="black" />
+              <Text>Mon dernier résultat</Text>
             </View>
-          ) : (
+            <View style={{ display: 'flex', alignItems: 'center' }}>
+              <Icon name="trophy-award" size={30} color="black" />
+              <Text>Mon meilleur résultat</Text>
+            </View>
+          </View>
+
+          {user.id !== auth.currentUser?.uid && (
             <View
               style={{
                 display: 'flex',

@@ -12,6 +12,7 @@ import Event from './Feed/show'
 import Boats from './Boats'
 import Boat from './Boats/show'
 import Logbook from './Boats/Show/Logbook'
+import BoatConversations from './Boats/Show/BoatConversations'
 import CreateBoat from './Boats/create'
 import UpdateBoat from './Boats/update'
 import JoinWaitingList from './Boats/Update/JoinWaitingList'
@@ -21,7 +22,7 @@ import New from './New'
 import NewEvent from './New/NewEvent'
 import NewLogbook from './New/NewLogbook'
 import NewPost from './New/NewPost'
-import NewStory from './New/NewStory'
+import NewImage from './New/NewImage'
 
 // Conversations
 import Conversations from './Conversations'
@@ -43,6 +44,7 @@ export {
   Boats,
   Boat,
   Logbook,
+  BoatConversations,
   CreateBoat,
   UpdateBoat,
   JoinWaitingList,
@@ -50,7 +52,7 @@ export {
   NewEvent,
   NewLogbook,
   NewPost,
-  NewStory,
+  NewImage,
   Conversations,
   Conversation,
   CreateConversation,

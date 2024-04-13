@@ -1,12 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Button,
-  Text,
-  Switch,
-  Linking
-} from 'react-native'
+import { View, StyleSheet, Button, Text, Switch, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker'
 import { Avatar } from '../../../components'

@@ -48,8 +48,8 @@ const Boats = ({ navigation }: any) => {
       ) : (
         <ScrollView>
           <View style={styles.container}>
-            {boats.map(boat => (
-              <>
+            {boats.map((boat, i) => (
+              <React.Fragment key={i}>
                 <View
                   style={styles.card}
                   onTouchEnd={() =>
@@ -74,7 +74,7 @@ const Boats = ({ navigation }: any) => {
                   </View>
                 </View>
                 <View style={styles.line} />
-              </>
+              </React.Fragment>
             ))}
             <View style={styles.buttonCreateContainer}>
               <View>

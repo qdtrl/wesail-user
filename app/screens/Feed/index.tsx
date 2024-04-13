@@ -13,22 +13,7 @@ import { db } from '../../services/firebase'
 import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-
-type EventProps = {
-  id: string
-  club_id: string
-  name: string
-  description: string
-  start_date: string
-  end_date: string
-  created_at: string
-  cover_url: string
-  sponsor: string
-  address: string
-  city: string
-  zipcode: string
-  images: string[]
-}
+import { EventProps } from '../../models'
 
 const Feed = ({ navigation }: any) => {
   const [events, setEvents] = useState<EventProps[]>([])
@@ -38,21 +23,13 @@ const Feed = ({ navigation }: any) => {
   const getEvents = async () => {
     const eventsRef = collection(db, 'events')
     onSnapshot(eventsRef, snapshot => {
-      const eventsList = snapshot.docs.map(res => ({
-        id: res.id,
-        club_id: res.data().club_id,
-        name: res.data().name,
-        description: res.data().description,
-        start_date: res.data().start_date,
-        end_date: res.data().end_date,
-        created_at: res.data().created_at,
-        cover_url: res.data().cover_url,
-        sponsor: res.data().sponsor,
-        address: res.data().address,
-        city: res.data().city,
-        zipcode: res.data().zipcode,
-        images: res.data().images
-      }))
+      const eventsList = snapshot.docs.map(
+        res =>
+          ({
+            id: res.id,
+            ...res.data()
+          } as EventProps)
+      )
 
       setEvents(eventsList)
     })

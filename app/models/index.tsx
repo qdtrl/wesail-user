@@ -20,7 +20,6 @@ export type UserProps = {
   blocked: string[]
   followings: string[]
   followers: string[]
-  boats: string[]
   images: string[]
   description: string
   birth_date: number
@@ -31,6 +30,7 @@ export type UserProps = {
 export type ConversationProps = {
   id: string
   name: string
+  boat_id: string
   created_at: number
   icon_url: string
   users: string[]
@@ -59,4 +59,20 @@ export type BoatProps = {
   water: number
   year: number
   created_at: string
+}
+
+export type EventProps = {
+  id: string
+  club_id: string
+  name: string
+  description: string
+  start_date: string
+  end_date: string
+  created_at: string
+  cover_url: string
+  sponsor: string
+  address: string
+  city: string
+  zipcode: string
+  images: string[]
 }
