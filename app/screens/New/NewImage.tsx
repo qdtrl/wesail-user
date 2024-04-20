@@ -2,14 +2,14 @@ import { View, Text, Alert, Image, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { auth, db, storage } from '../../services/firebase'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { launchImageLibrary } from 'react-native-image-picker'
+import { Asset, launchImageLibrary } from 'react-native-image-picker'
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore'
 import { Button } from '../../components'
 
 const NewImage = ({ navigation }: any) => {
   const [progress, setProgress] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [image, setImage] = useState({ uri: '' })
+  const [image, setImage] = useState<Asset>({ uri: '' , fileName: ''})
 
   const handleButtonPress = () => {
     launchImageLibrary(

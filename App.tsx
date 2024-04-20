@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { auth, rtdb } from './app/services/firebase'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { Home, Login, Register, ForgotPassword } from './app/screens'
 import {
   BoatsRouter,
@@ -90,8 +90,11 @@ export default function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Suspense fallback={<ActivityIndicator size="large" color="#0000ff" />} />
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
-      {user ? (
+      {loading ? (
+        <View style={styles.section}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      ) : user ? (
         <Tab.Navigator
           initialRouteName="/feed-router"
           screenOptions={{
@@ -182,3 +185,7 @@ export default function App(): React.JSX.Element {
     </NavigationContainer>
   )
 }
+
+const styles = StyleSheet.create({
+  section: { flex: 1, justifyContent: 'center', alignItems: 'center' }
+})
